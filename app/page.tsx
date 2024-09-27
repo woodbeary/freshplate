@@ -5,8 +5,8 @@ import { Input } from "@/components/ui/input";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-green-50 to-white">
-      <header className="p-4 flex justify-between items-center">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-green-100 to-white">
+      <header className="p-4 flex justify-between items-center bg-white shadow-sm">
         <Link href="/">
           <Image
             src="/freshplate-logo.png"
@@ -18,22 +18,22 @@ export default function Home() {
         </Link>
         <nav className="hidden md:flex space-x-4">
           <Button variant="ghost" asChild>
-            <Link href="/about">About</Link>
+            <Link href="/about" className="text-green-800 hover:text-green-600">About</Link>
           </Button>
           <Button variant="ghost" asChild>
-            <Link href="/how-it-works">How It Works</Link>
+            <Link href="/how-it-works" className="text-green-800 hover:text-green-600">How It Works</Link>
           </Button>
           <Button variant="ghost" asChild>
-            <Link href="/pricing">Pricing</Link>
+            <Link href="/pricing" className="text-green-800 hover:text-green-600">Pricing</Link>
           </Button>
-          <Button variant="outline" asChild>
+          <Button variant="outline" asChild className="text-green-800 border-green-800 hover:bg-green-50">
             <Link href="/login">Log In</Link>
           </Button>
-          <Button className="bg-green-600 hover:bg-green-700 text-white" asChild>
+          <Button className="bg-green-700 hover:bg-green-800 text-white" asChild>
             <Link href="/signup">Sign Up</Link>
           </Button>
         </nav>
-        <Button variant="ghost" className="md:hidden">
+        <Button variant="ghost" className="md:hidden text-green-800">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
           </svg>
@@ -44,19 +44,19 @@ export default function Home() {
         <section className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 mb-8 md:mb-0">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-green-800">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-green-900">
                 Restaurant-Quality Meals,<br className="hidden md:inline" /> Crafted in Your Kitchen
               </h1>
-              <p className="text-lg md:text-xl mb-6 text-gray-600">
+              <p className="text-lg md:text-xl mb-6 text-gray-700">
                 Experience the joy of cooking your favorite restaurant dishes at home. FreshPlate brings you chef-curated recipes and premium ingredients, delivered to your doorstep.
               </p>
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                 <Input placeholder="Enter your email" className="max-w-xs" />
-                <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white">
+                <Button size="lg" className="bg-green-700 hover:bg-green-800 text-white">
                   Get Started
                 </Button>
               </div>
-              <p className="mt-4 text-sm text-gray-500">
+              <p className="mt-4 text-sm text-gray-600">
                 Join 50,000+ food enthusiasts already cooking with FreshPlate
               </p>
             </div>
