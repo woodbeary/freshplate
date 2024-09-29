@@ -90,6 +90,34 @@ export default function Home() {
             </div>
           </section>
         </FadeInSection>
+
+        <FadeInSection>
+          <section className="py-12 bg-white">
+            <div className="max-w-4xl mx-auto px-4">
+              <h2 className="text-3xl font-bold mb-8 text-center text-green-800">How FreshPlate Works</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {[
+                  { title: "Pick Favorites", description: "Select dishes you love from local restaurants.", icon: "🍔" },
+                  { title: "Set Goals", description: "Tell us your health and nutrition targets.", icon: "🎯" },
+                  { title: "Get Meals", description: "Receive personalized recipes and ingredients.", icon: "📦" }
+                ].map((step, index) => (
+                  <motion.div 
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 * index, duration: 0.5 }}
+                    className="text-center bg-green-50 p-6 rounded-lg shadow-md"
+                  >
+                    <div className="text-4xl mb-4">{step.icon}</div>
+                    <h3 className="text-xl font-semibold mb-2 text-green-800">{step.title}</h3>
+                    <p className="text-gray-600">{step.description}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </section>
+        </FadeInSection>
+
         <FadeInSection>
           <section className="py-8">
             <div className="max-w-xs mx-auto text-center px-4">
