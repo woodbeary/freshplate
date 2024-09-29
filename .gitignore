@@ -34,3 +34,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+freshplate-60dbc-firebase-adminsdk-9d05m-dbc85ed45e.json

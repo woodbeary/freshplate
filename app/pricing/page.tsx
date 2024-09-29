@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { CheckCircle2, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
+import InstacartLogo from '@/components/InstacartLogo';
 
 const pricingPlans = [
   { name: "Starter", meals: 2, price: 39.99, betaPrice: 0, features: ["2 meals per week", "Curated restaurant dishes", "Premium ingredients", "Step-by-step recipes"] },
@@ -43,7 +44,12 @@ export default function Pricing() {
       </header>
 
       <main className="flex-grow pt-20 container mx-auto px-4 py-8 max-w-6xl">
-        <h1 className="text-3xl md:text-4xl font-bold mb-6 text-green-800 text-center">FreshPlate Pricing</h1>
+        <h1 className="text-3xl md:text-4xl font-bold mb-4 text-green-800 text-center">FreshPlate Pricing</h1>
+        
+        <div className="mb-12 w-full max-w-[400px] mx-auto">
+          <p className="text-sm text-gray-600 text-center mb-4">powered by</p>
+          <InstacartLogo />
+        </div>
         
         <p className="text-lg mb-8 text-center max-w-2xl mx-auto">Choose the plan that fits your lifestyle. All plans include free delivery and serve 2 people per meal.</p>
         
@@ -85,8 +91,8 @@ export default function Pricing() {
             <Image
               src="/health/healthicon.png"
               alt="Apple Health Icon"
-              width={24}
-              height={24}
+              width={48}  // Increased from 32
+              height={48} // Increased from 32
               className="mr-2"
             />
             <span className="text-lg font-semibold">Import health data from your iPhone</span>

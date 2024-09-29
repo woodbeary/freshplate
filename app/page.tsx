@@ -90,7 +90,6 @@ export default function Home() {
             </div>
           </section>
         </FadeInSection>
-
         <FadeInSection>
           <section className="py-8">
             <div className="max-w-xs mx-auto text-center px-4">
@@ -98,15 +97,6 @@ export default function Home() {
               <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white text-base px-6 py-3 rounded-full transition-all transform hover:scale-105 w-full" asChild>
                 <Link href="/pricing">View Pricing</Link>
               </Button>
-              <div className="mt-4 inline-block">
-                <Image
-                  src="/health/health.svg"
-                  alt="Works with Apple Health"
-                  width={120}
-                  height={24}
-                  className="mx-auto"
-                />
-              </div>
             </div>
           </section>
         </FadeInSection>
@@ -114,7 +104,16 @@ export default function Home() {
 
       <footer className="bg-green-800 text-white py-6">
         <div className="max-w-xs mx-auto px-4 flex flex-col items-center">
-          <p className="mb-4 text-sm text-center">© 2023 FreshPlate. All rights reserved.</p>
+          <div className="mb-4">
+            <Image
+              src="/health/health.svg"
+              alt="Works with Apple Health"
+              width={120}
+              height={24}
+              className="mx-auto"
+            />
+          </div>
+          <p className="mb-4 text-sm text-center">© 2024 FreshPlate. All rights reserved.</p>
           <div className="flex space-x-4">
             <Link href="/privacy" className="text-sm hover:text-green-200 transition-colors">Privacy</Link>
             <Link href="/terms" className="text-sm hover:text-green-200 transition-colors">Terms</Link>
