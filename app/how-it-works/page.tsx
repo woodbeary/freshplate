@@ -53,7 +53,7 @@ export default function HowItWorks() {
       
       <div className="text-center">
         <Button asChild className="bg-green-600 hover:bg-green-700 text-white">
-          <Link href="/signup">Start Your Culinary Journey</Link>
+          <Link href="/waitlist">Join the Waitlist</Link>
         </Button>
       </div>
     </div>

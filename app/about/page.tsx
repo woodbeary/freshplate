@@ -73,7 +73,7 @@ export default function About() {
       
       <div className="text-center">
         <Button asChild className="bg-green-600 hover:bg-green-700 text-white">
-          <Link href="/signup">Join FreshPlate Today</Link>
+          <Link href="/waitlist">Join FreshPlate Waitlist</Link>
         </Button>
       </div>
       
