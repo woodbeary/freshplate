@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { FadeInSection } from "@/components/FadeInSection";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function Home() {
   return (
@@ -99,7 +100,21 @@ export default function Home() {
         <FadeInSection>
           <section className="py-12 bg-white">
             <div className="max-w-4xl mx-auto px-4">
-              <h2 className="text-3xl font-bold mb-8 text-center text-green-800">How FreshPlate Works</h2>
+              <h2 className="text-3xl font-bold mb-6 text-green-800 text-center">Why What You Eat Matters—And How Fresh Plate Makes It Easier.</h2>
+              <p className="text-lg mb-6 text-center text-gray-600">
+                At Fresh Plate, we believe eating well shouldn't mean sacrificing the foods you love or spending hours meal planning. We turn your favorite restaurant-inspired meals into personalized plans that fit your health goals, with groceries delivered right to your door.
+              </p>
+              <p className="text-lg mb-6 text-center text-gray-600">
+                Food profoundly impacts our daily lives—how we feel, perform, and live. Fresh Plate helps you eat delicious, healthy meals effortlessly, so you can focus on enjoying your life.
+              </p>
+            </div>
+          </section>
+        </FadeInSection>
+
+        <FadeInSection>
+          <section className="py-12 bg-green-50">
+            <div className="max-w-4xl mx-auto px-4">
+              <h2 className="text-3xl font-bold mb-8 text-center text-green-800">How Fresh Plate Works</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {[
                   { title: "Tell Us About You", description: "We learn about your favorite restaurants, food preferences, and health goals.", icon: "🍔" },
@@ -111,7 +126,7 @@ export default function Home() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 * index, duration: 0.5 }}
-                    className="text-center bg-green-50 p-6 rounded-lg shadow-md"
+                    className="text-center bg-white p-6 rounded-lg shadow-md"
                   >
                     <div className="text-4xl mb-4">{step.icon}</div>
                     <h3 className="text-xl font-semibold mb-2 text-green-800">{step.title}</h3>
@@ -124,9 +139,76 @@ export default function Home() {
         </FadeInSection>
 
         <FadeInSection>
-          <section className="py-8">
-            <div className="max-w-xs mx-auto text-center px-4">
-              <h2 className="text-2xl font-bold mb-6 text-green-800">Ready to transform your meals?</h2>
+          <section className="py-12 bg-white">
+            <div className="max-w-4xl mx-auto px-4">
+              <h2 className="text-3xl font-bold mb-8 text-center text-green-800">What People Are Saying</h2>
+              <Card className="bg-green-50">
+                <CardContent className="p-6">
+                  <p className="text-lg mb-4 text-gray-700">"Fresh Plate made healthy eating effortless. I love that I can enjoy my favorite foods and still meet my health goals!"</p>
+                  <p className="text-sm text-green-700 font-semibold">- Sarah Johnson, San Francisco</p>
+                </CardContent>
+              </Card>
+            </div>
+          </section>
+        </FadeInSection>
+
+        <FadeInSection>
+          <section className="py-12 bg-green-50">
+            <div className="max-w-4xl mx-auto px-4">
+              <h2 className="text-3xl font-bold mb-6 text-center text-green-800">Why Choose Fresh Plate?</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {[
+                  { title: "Personalized Just for You", description: "Your meal plan is unique to your tastes and goals.", icon: "🎯" },
+                  { title: "Enjoy Restaurant-Quality at Home", description: "Meals inspired by your favorite restaurants but made to support your health.", icon: "🍽️" },
+                  { title: "Health and Convenience, Delivered", description: "We handle meal planning and grocery shopping for you.", icon: "📦" }
+                ].map((feature, index) => (
+                  <motion.div 
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 * index, duration: 0.5 }}
+                    className="text-center bg-white p-6 rounded-lg shadow-md"
+                  >
+                    <div className="text-4xl mb-4">{feature.icon}</div>
+                    <h3 className="text-xl font-semibold mb-2 text-green-800">{feature.title}</h3>
+                    <p className="text-gray-600">{feature.description}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </section>
+        </FadeInSection>
+
+        <FadeInSection>
+          <section className="py-12 bg-white">
+            <div className="max-w-4xl mx-auto px-4">
+              <h2 className="text-3xl font-bold mb-8 text-center text-green-800">Frequently Asked Questions</h2>
+              <div className="space-y-6">
+                {[
+                  { q: "How often will I receive deliveries?", a: "You can choose weekly, bi-weekly, or monthly deliveries based on your preferences." },
+                  { q: "Can I skip a week or pause my subscription?", a: "Absolutely! You have full control over your subscription and can skip or pause at any time." },
+                  { q: "Are there options for dietary restrictions?", a: "Yes, we offer vegetarian, vegan, gluten-free, and other dietary options. You can set your preferences in your account." },
+                ].map((faq, index) => (
+                  <div key={index} className="bg-green-50 p-6 rounded-lg">
+                    <h3 className="text-xl font-semibold mb-2 text-green-800">{faq.q}</h3>
+                    <p className="text-gray-700">{faq.a}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="text-center mt-8">
+                <Button asChild>
+                  <Link href="/faq">View All FAQs</Link>
+                </Button>
+              </div>
+            </div>
+          </section>
+        </FadeInSection>
+
+        <FadeInSection>
+          <section className="py-12 bg-green-50">
+            <div className="max-w-md mx-auto text-center px-4">
+              <h2 className="text-3xl font-bold mb-6 text-green-800">Ready to Eat Better Without the Stress?</h2>
+              <p className="text-lg mb-6 text-gray-600">Be the first to experience personalized meal plans delivered to your door. Start eating well, effortlessly.</p>
               <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white text-base px-6 py-3 rounded-full transition-all transform hover:scale-105 w-full" asChild>
                 <Link href="/waitlist">Join the Waitlist Now</Link>
               </Button>
