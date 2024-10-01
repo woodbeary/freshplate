@@ -34,7 +34,7 @@ export default function Home() {
         </nav>
       </motion.header>
 
-      <main className="flex-grow pt-20"> {/* Increased padding-top */}
+      <main className="flex-grow pt-20">
         <FadeInSection>
           <section className="max-w-md mx-auto text-center px-4 py-8">
             <motion.h1 
@@ -43,7 +43,7 @@ export default function Home() {
               transition={{ delay: 0.2, duration: 0.8 }}
               className="text-3xl sm:text-4xl font-bold mb-4 text-green-800"
             >
-              Your Favorite Meals, Personalized and Delivered
+              Feel Your Best with Meals Tailored to You—Delivered.
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
@@ -51,15 +51,20 @@ export default function Home() {
               transition={{ delay: 0.4, duration: 0.8 }}
               className="text-lg mb-6 text-gray-600"
             >
-              Custom meal plans inspired by your favorite restaurants, tailored to your health goals.
+              We turn your favorite restaurant meals into personalized plans, designed to meet your health goals and delivered with all the groceries you need.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
+              className="w-full sm:w-auto"
             >
-              <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white text-base px-6 py-3 rounded-full transition-all transform hover:scale-105 w-full sm:w-auto" asChild>
-                <Link href="/signup">Start Your Personalized Plan</Link>
+              <Button 
+                size="lg" 
+                className="bg-green-600 hover:bg-green-700 text-white text-base px-4 py-3 rounded-full transition-all transform hover:scale-105 w-full whitespace-normal h-auto" 
+                asChild
+              >
+                <Link href="/waitlist">Get Early Access to your Personalized Plan!</Link>
               </Button>
             </motion.div>
           </section>
@@ -97,9 +102,9 @@ export default function Home() {
               <h2 className="text-3xl font-bold mb-8 text-center text-green-800">How FreshPlate Works</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {[
-                  { title: "Pick Favorites", description: "Select dishes you love from local restaurants.", icon: "🍔" },
-                  { title: "Set Goals", description: "Tell us your health and nutrition targets.", icon: "🎯" },
-                  { title: "Get Meals", description: "Receive personalized recipes and ingredients.", icon: "📦" }
+                  { title: "Tell Us About You", description: "We learn about your favorite restaurants, food preferences, and health goals.", icon: "🍔" },
+                  { title: "Get Your Custom Meal Plan", description: "We create a weekly meal plan inspired by your favorite dishes and tailored to your nutritional needs.", icon: "🎯" },
+                  { title: "Groceries Delivered", description: "We send your grocery list to our partner, Instacart, and deliver all the fresh ingredients to your door.", icon: "📦" }
                 ].map((step, index) => (
                   <motion.div 
                     key={index}
@@ -123,8 +128,9 @@ export default function Home() {
             <div className="max-w-xs mx-auto text-center px-4">
               <h2 className="text-2xl font-bold mb-6 text-green-800">Ready to transform your meals?</h2>
               <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white text-base px-6 py-3 rounded-full transition-all transform hover:scale-105 w-full" asChild>
-                <Link href="/pricing">View Pricing</Link>
+                <Link href="/waitlist">Join the Waitlist Now</Link>
               </Button>
+              <p className="text-sm mt-4 text-gray-500">Sign up now and get a special discount when we launch!</p>
             </div>
           </section>
         </FadeInSection>
