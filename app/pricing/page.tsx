@@ -10,16 +10,48 @@ import { motion } from "framer-motion";
 import InstacartLogo from '@/components/InstacartLogo';
 
 const pricingPlans = [
-  { name: "Starter", meals: 2, price: 39.99, betaPrice: 0, features: ["2 meals per week", "Curated restaurant dishes", "Premium ingredients", "Step-by-step recipes"] },
-  { name: "Popular", meals: 3, price: 59.99, betaPrice: 0, features: ["3 meals per week", "Curated restaurant dishes", "Premium ingredients", "Step-by-step recipes", "Free side dish"] },
-  { name: "Foodie", meals: 4, price: 79.99, betaPrice: 0, features: ["4 meals per week", "Curated restaurant dishes", "Premium ingredients", "Step-by-step recipes", "Free side dish", "Exclusive chef tips"] }
+  { 
+    name: "Basic", 
+    price: 9.99, 
+    betaPrice: 4.99, 
+    features: [
+      "AI-generated recipes",
+      "Instant Instacart shopping lists",
+      "Basic meal customization",
+      "Email support"
+    ] 
+  },
+  { 
+    name: "Pro", 
+    price: 19.99, 
+    betaPrice: 9.99, 
+    features: [
+      "Everything in Basic",
+      "Advanced recipe customization",
+      "Nutritional tracking",
+      "Priority support",
+      "Early access to new features"
+    ] 
+  },
+  { 
+    name: "Enterprise", 
+    price: 49.99, 
+    betaPrice: 24.99, 
+    features: [
+      "Everything in Pro",
+      "Custom API access",
+      "Dedicated account manager",
+      "Custom integrations",
+      "SLA guarantees"
+    ] 
+  }
 ];
 
 const faqs = [
-  { q: "Can I change my plan?", a: "Yes, you can upgrade, downgrade, or cancel your plan at any time." },
-  { q: "Is there a commitment?", a: "No long-term commitment required. You can cancel your subscription anytime." },
-  { q: "Are there additional fees?", a: "No hidden fees. The price you see includes delivery and all ingredients for your meals." },
-  { q: "Can I gift a subscription?", a: "Absolutely! FreshPlate makes a great gift. Check out our gift options for more details." }
+  { q: "What's included in the beta?", a: "Beta subscribers get access to our AI recipe generation and instant Instacart shopping lists at a special discounted price. You'll also be first to try new features as we roll them out." },
+  { q: "When will direct ordering be available?", a: "We're working on integrating direct ordering and delivery tracking. Beta subscribers will get early access when these features launch." },
+  { q: "Can I cancel my subscription?", a: "Yes, you can cancel your subscription at any time. No long-term commitment required." },
+  { q: "Will prices increase after beta?", a: "Beta subscribers will keep their special pricing for life. Regular pricing will apply to new subscribers after the beta period." }
 ];
 
 export default function Pricing() {
@@ -44,14 +76,14 @@ export default function Pricing() {
       </header>
 
       <main className="flex-grow pt-20 container mx-auto px-4 py-8 max-w-6xl">
-        <h1 className="text-3xl md:text-4xl font-bold mb-4 text-green-800 text-center">FreshPlate Pricing</h1>
+        <h1 className="text-3xl md:text-4xl font-bold mb-4 text-green-800 text-center">Beta Launch Special Pricing</h1>
         
         <div className="mb-12 w-full max-w-[400px] mx-auto">
           <p className="text-sm text-gray-600 text-center mb-4">powered by</p>
           <InstacartLogo />
         </div>
         
-        <p className="text-lg mb-8 text-center max-w-2xl mx-auto">Choose the plan that fits your lifestyle. All plans include free delivery and serve 2 people per meal.</p>
+        <p className="text-lg mb-8 text-center max-w-2xl mx-auto">Join our beta program today and lock in special pricing for life. Get instant access to AI-powered recipe generation and Instacart shopping lists.</p>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {pricingPlans.map((plan, index) => (
@@ -85,21 +117,19 @@ export default function Pricing() {
         </div>
 
         <div className="bg-green-50 p-6 rounded-lg mb-12 text-center">
-          <h2 className="text-2xl font-bold mb-4 text-green-700">Special Beta Offer</h2>
-          <p className="mb-4">Get lifetime access to Apple Health integration for just $5!</p>
+          <h2 className="text-2xl font-bold mb-4 text-green-700">Coming Soon</h2>
+          <p className="mb-4">Direct ordering and delivery tracking through our platform</p>
           <div className="flex justify-center items-center mb-4">
             <Image
               src="/health/healthicon.png"
               alt="Apple Health Icon"
-              width={48}  // Increased from 32
-              height={48} // Increased from 32
+              width={48}
+              height={48}
               className="mr-2"
             />
-            <span className="text-lg font-semibold">Import health data from your iPhone</span>
+            <span className="text-lg font-semibold">Plus Apple Health integration</span>
           </div>
-          <Button className="bg-green-600 hover:bg-green-700 text-white">
-            Get Lifetime Access for $5
-          </Button>
+          <p className="text-sm text-gray-600">Beta subscribers will get early access to all new features!</p>
         </div>
         
         <h2 className="text-2xl font-bold mb-4 text-green-700 text-center">Frequently Asked Questions</h2>

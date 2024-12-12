@@ -29,6 +29,9 @@ export default function Home() {
           <Button variant="ghost" asChild className="text-green-800 hover:text-green-600 transition-colors text-sm px-3">
             <Link href="/pricing">Pricing</Link>
           </Button>
+          <Button variant="ghost" asChild className="text-green-800 hover:text-green-600 transition-colors text-sm px-3">
+            <Link href="/recipes">Try Beta</Link>
+          </Button>
           <Button className="bg-green-600 hover:bg-green-700 text-white transition-colors text-sm px-3" asChild>
             <Link href="/signup">Get Started</Link>
           </Button>
@@ -44,7 +47,7 @@ export default function Home() {
               transition={{ delay: 0.2, duration: 0.8 }}
               className="text-3xl sm:text-4xl font-bold mb-4 text-green-800"
             >
-              Feel Your Best with Meals Tailored to You—Delivered.
+              AI-Powered Recipe Generation with Instant Instacart Shopping
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
@@ -52,20 +55,28 @@ export default function Home() {
               transition={{ delay: 0.4, duration: 0.8 }}
               className="text-lg mb-6 text-gray-600"
             >
-              We turn your favorite restaurant meals into personalized plans, designed to meet your health goals and delivered with all the groceries you need.
+              Generate personalized recipes with our AI and get instant Instacart shopping lists. Try our beta version today!
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
-              className="w-full sm:w-auto"
+              className="flex flex-col sm:flex-row gap-4 justify-center"
             >
               <Button 
                 size="lg" 
-                className="bg-green-600 hover:bg-green-700 text-white text-base px-4 py-3 rounded-full transition-all transform hover:scale-105 w-full whitespace-normal h-auto" 
+                className="bg-green-600 hover:bg-green-700 text-white text-base px-6 py-3 rounded-full transition-all transform hover:scale-105" 
                 asChild
               >
-                <Link href="/waitlist">Get Early Access to your Personalized Plan!</Link>
+                <Link href="/recipes">Try Beta Now</Link>
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="text-green-700 border-green-600 hover:bg-green-50 text-base px-6 py-3 rounded-full transition-all transform hover:scale-105" 
+                asChild
+              >
+                <Link href="/pricing">View Pricing</Link>
               </Button>
             </motion.div>
           </section>
@@ -117,9 +128,9 @@ export default function Home() {
               <h2 className="text-3xl font-bold mb-8 text-center text-green-800">How Fresh Plate Works</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {[
-                  { title: "Tell Us About You", description: "We learn about your favorite restaurants, food preferences, and health goals.", icon: "🍔" },
-                  { title: "Get Your Custom Meal Plan", description: "We create a weekly meal plan inspired by your favorite dishes and tailored to your nutritional needs.", icon: "🎯" },
-                  { title: "Groceries Delivered", description: "We send your grocery list to our partner, Instacart, and deliver all the fresh ingredients to your door.", icon: "📦" }
+                  { title: "Tell Us About You", description: "Share your food preferences and health goals with our AI to generate personalized recipes.", icon: "🍔" },
+                  { title: "Get Your Custom Recipes", description: "Receive AI-generated recipes inspired by your favorite dishes, with automatic Instacart shopping lists.", icon: "🎯" },
+                  { title: "Shop with One Click", description: "Beta: Generate Instacart shopping lists instantly. Coming Soon: Direct ordering and delivery tracking.", icon: "📦" }
                 ].map((step, index) => (
                   <motion.div 
                     key={index}
@@ -158,9 +169,9 @@ export default function Home() {
               <h2 className="text-3xl font-bold mb-6 text-center text-green-800">Why Choose Fresh Plate?</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {[
-                  { title: "Personalized Just for You", description: "Your meal plan is unique to your tastes and goals.", icon: "🎯" },
-                  { title: "Enjoy Restaurant-Quality at Home", description: "Meals inspired by your favorite restaurants but made to support your health.", icon: "🍽️" },
-                  { title: "Health and Convenience, Delivered", description: "We handle meal planning and grocery shopping for you.", icon: "📦" }
+                  { title: "AI-Powered Personalization", description: "Our AI learns your tastes to generate perfect recipes just for you.", icon: "🎯" },
+                  { title: "Instant Shopping Lists", description: "Generate Instacart shopping lists with one click. Direct ordering coming soon!", icon: "🛒" },
+                  { title: "Health-Focused Recipes", description: "AI-generated recipes that match your health goals and dietary needs.", icon: "💪" }
                 ].map((feature, index) => (
                   <motion.div 
                     key={index}
@@ -207,12 +218,12 @@ export default function Home() {
         <FadeInSection>
           <section className="py-12 bg-green-50">
             <div className="max-w-md mx-auto text-center px-4">
-              <h2 className="text-3xl font-bold mb-6 text-green-800">Ready to Eat Better Without the Stress?</h2>
-              <p className="text-lg mb-6 text-gray-600">Be the first to experience personalized meal plans delivered to your door. Start eating well, effortlessly.</p>
+              <h2 className="text-3xl font-bold mb-6 text-green-800">Ready to Transform Your Cooking Experience?</h2>
+              <p className="text-lg mb-6 text-gray-600">Join our beta program today and be the first to experience AI-powered recipe generation with instant Instacart shopping lists.</p>
               <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white text-base px-6 py-3 rounded-full transition-all transform hover:scale-105 w-full" asChild>
-                <Link href="/waitlist">Join the Waitlist Now</Link>
+                <Link href="/pricing">Start Your Free Trial</Link>
               </Button>
-              <p className="text-sm mt-4 text-gray-500">Sign up now and get a special discount when we launch!</p>
+              <p className="text-sm mt-4 text-gray-500">Limited time beta pricing available now!</p>
             </div>
           </section>
         </FadeInSection>

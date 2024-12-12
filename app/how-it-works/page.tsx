@@ -5,23 +5,56 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Utensils, ChefHat, Truck, CookingPot } from "lucide-react";
 
 const steps = [
-  { title: "Choose Your Favorites", description: "Browse our curated selection of dishes from top local restaurants. Select the meals that excite your taste buds.", icon: Utensils },
-  { title: "We Create the Recipe", description: "Our AI analyzes your choices and creates custom recipes inspired by restaurant dishes, tailored to home cooking.", icon: ChefHat },
-  { title: "Fresh Ingredients Delivered", description: "We source high-quality, locally-grown ingredients and deliver them to your doorstep in eco-friendly packaging.", icon: Truck },
-  { title: "Cook and Enjoy", description: "Follow our easy step-by-step instructions to cook restaurant-quality meals in your own kitchen. Impress yourself and your loved ones!", icon: CookingPot }
+  { 
+    title: "Share Your Preferences", 
+    description: "Tell our AI about your favorite dishes, dietary restrictions, and health goals. Our advanced AI will learn your tastes to create perfect recipes.", 
+    icon: Utensils 
+  },
+  { 
+    title: "Get AI-Generated Recipes", 
+    description: "Our AI creates custom recipes inspired by your preferences, optimized for home cooking and your health goals.", 
+    icon: ChefHat 
+  },
+  { 
+    title: "Instant Shopping Lists", 
+    description: "Generate Instacart shopping lists with one click. Beta: Instant lists. Coming Soon: Direct ordering and delivery tracking.", 
+    icon: Truck 
+  },
+  { 
+    title: "Cook with Confidence", 
+    description: "Follow our detailed instructions to create restaurant-quality meals at home, with AI-powered tips and tricks.", 
+    icon: CookingPot 
+  }
 ];
 
 const faqs = [
-  { q: "How often will I receive deliveries?", a: "You can choose weekly, bi-weekly, or monthly deliveries based on your preferences." },
-  { q: "Can I skip a week or pause my subscription?", a: "Absolutely! You have full control over your subscription and can skip or pause at any time." },
-  { q: "Are there options for dietary restrictions?", a: "Yes, we offer vegetarian, vegan, gluten-free, and other dietary options. You can set your preferences in your account." },
-  { q: "How long do the ingredients stay fresh?", a: "Our ingredients are carefully packaged to stay fresh for up to 5 days after delivery." }
+  { 
+    q: "How does the AI recipe generation work?", 
+    a: "Our AI analyzes your preferences, dietary needs, and favorite dishes to create personalized recipes that you'll love. It continuously learns from your feedback to improve recommendations." 
+  },
+  { 
+    q: "What's included in the beta version?", 
+    a: "Beta subscribers get access to AI-powered recipe generation and instant Instacart shopping list creation. Direct ordering and delivery tracking features are coming soon." 
+  },
+  { 
+    q: "Can I customize the recipes?", 
+    a: "Yes! You can adjust portions, ingredients, and cooking methods. Our AI will remember your preferences for future recommendations." 
+  },
+  { 
+    q: "How does the Instacart integration work?", 
+    a: "Currently, we generate instant shopping lists that you can use on Instacart. In the upcoming full version, you'll be able to order and track deliveries directly from our platform." 
+  }
 ];
 
 export default function HowItWorks() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       <h1 className="text-3xl md:text-4xl font-bold mb-6 text-green-800 text-center">How FreshPlate Works</h1>
+      
+      <p className="text-lg mb-12 text-center max-w-3xl mx-auto">
+        Experience the future of home cooking with AI-powered recipe generation and seamless Instacart integration. 
+        Get started with our beta version today and be the first to try new features as they launch.
+      </p>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
         {steps.map((step, index) => (
