@@ -1,54 +1,58 @@
 # FreshPlate Development Progress
 
-## Current Phase: Beta Launch
+## Current Status
+- ✅ Basic recipe generation with Gemini AI
+- ✅ Basic Instacart Platform API integration
+- ✅ Landing page with beta access
+- ✅ How It Works page
+- ✅ Pricing page
 
-### Completed
-- Initial website setup with Next.js and Tailwind CSS
-- Basic UI components and layout
-- Landing page with core messaging
-- About page with company story
-- Pricing page with subscription plans
-- How It Works page
+## Immediate Implementation (Platform API)
+### 5-Step User Flow
+1. Location Input
+   - Zip code entry
+   - Geolocation option
+   - Location validation
 
-### In Progress
-- Beta Version Launch (Subscription-based)
-  - Integration with Instacart Connect APIs for recipe linking
-  - Implementation of subscription model
-  - Integration with Vercel AI SDK for recipe generation
-  - Basic user authentication and account management
+2. Restaurant Discovery
+   - Yelp API integration for local restaurants
+   - Top 10 results display
+   - Search functionality
+   - Basic filtering options
 
-### Upcoming
-- Full Platform Version
-  - Direct ordering capabilities
-  - Complete Instacart Connect API integration for:
-    - Scheduling
-    - Full-service shopping
-    - Delivery
-    - Pickup
-    - Order tracking
-  - Enhanced AI features for personalized recipe recommendations
-  - Seamless checkout process
-  - Advanced user dashboard
+3. Menu Selection
+   - Google Maps menu data backup
+   - Yelp/Grubhub menu
+   - Select up to 10 dishes total
+   - Save selections
 
-### Recent Updates
-- Updated marketing strategy to focus on two phases:
-  1. Beta (Current): Subscription-based model with Instacart recipe linking
-  2. Full Version (Coming Soon): Complete platform integration with direct ordering
+4. Recipe Generation
+   - Gemini AI recipe creation
+   - Ingredient list extraction
+   - Instacart search links
+   - Basic shopping list
 
-### Next Steps
-1. Implement Vercel AI SDK integration
-2. Set up subscription management system
-3. Integrate Instacart Connect APIs for recipe linking
-4. Create user authentication system
-5. Develop basic user dashboard
+5. Shopping Integration
+   - Direct links to Instacart search
+   - Individual ingredient search
+   - Basic checkout flow
 
-### Technical Debt
-- Need to implement proper error handling
-- Add comprehensive testing suite
-- Optimize performance
-- Implement proper logging system
+## API Integration Plan
+### Phase 1 (Now - Platform API)
+- Gemini AI for recipes
+- Yelp for restaurants
+- Google Maps for menus
+- Instacart Platform API for shopping links
 
-### Notes
-- Beta version will focus on providing value through recipe generation and Instacart integration
-- Full version will expand to become a complete meal planning and delivery platform
-- Security and user data protection are top priorities 
+### Phase 2 (Future - Connect API)
+- Real-time inventory checking
+- Direct cart manipulation
+- OAuth integration
+- Persistent shopping lists
+- Automated checkout
+
+## Notes
+- Currently building with Platform API
+- No login required for beta
+- Connect API features noted for future
+- Focus on seamless user experience
