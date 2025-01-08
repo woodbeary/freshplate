@@ -25,7 +25,7 @@ export default function Onboarding() {
         <div>
           <h2 className="text-3xl font-bold mb-6">Where are you located?</h2>
           <Input placeholder="Enter your zip code" className="mb-4" />
-          <p className="text-sm text-gray-500 mb-4">We'll use this to find restaurants and delivery options near you.</p>
+          <p className="text-sm text-gray-500 mb-4">We&apos;ll use this to find restaurants and delivery options near you.</p>
         </div>
       )}
 
@@ -72,7 +72,7 @@ export default function Onboarding() {
           </ul>
           <p>Does this sound right?</p>
           <div className="flex space-x-4 mt-4">
-            <Button>Yes, that's me!</Button>
+            <Button>Yes, that&apos;s me!</Button>
             <Button variant="outline">Adjust Preferences</Button>
           </div>
         </div>

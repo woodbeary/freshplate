@@ -48,7 +48,6 @@ async function generateInstacartLink(ingredient: string): Promise<string> {
       });
 
       if (response.ok) {
-        const data = await response.json();
         // For now, return the search URL until we properly handle the API response
         return `https://www.instacart.com/store/search/${searchTerm}`;
       }

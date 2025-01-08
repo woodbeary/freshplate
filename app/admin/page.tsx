@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Users, UserPlus, TrendingUp, List, BarChart2, ChevronDown, ChevronUp } from "lucide-react";
+import { Users, UserPlus, TrendingUp, List, BarChart2 } from "lucide-react";
 import { Area, AreaChart, Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import { format, parseISO } from 'date-fns';
 import ReCAPTCHA from "react-google-recaptcha";
@@ -21,6 +21,11 @@ interface WaitlistEntry {
   timestamp: string;
 }
 
+interface ChartDataPoint {
+  name: string;
+  total: number;
+}
+
 export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
@@ -31,7 +36,6 @@ export default function AdminPage() {
   const [loginError, setLoginError] = useState('');
   const [waitlistPage, setWaitlistPage] = useState(1);
   const [totalWaitlistEntries, setTotalWaitlistEntries] = useState(0);
-  const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -48,10 +52,10 @@ export default function AdminPage() {
       if (response.ok) {
         setIsAuthenticated(true);
       } else {
-        const data = await response.json();
-        setLoginError(data.error || 'Invalid credentials');
+        const { error: responseError } = await response.json();
+        setLoginError(responseError || 'Invalid credentials');
       }
-    } catch (error) {
+    } catch {
       setLoginError('An error occurred. Please try again.');
     }
   };
@@ -69,7 +73,7 @@ export default function AdminPage() {
           new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
         );
         
-        const cumulativeData = sortedData.reduce((acc: any[], entry: WaitlistEntry, index: number) => {
+        const cumulativeData = sortedData.reduce((acc: ChartDataPoint[], entry: WaitlistEntry, index: number) => {
           const date = format(parseISO(entry.timestamp), 'MMM d');
           if (acc.length === 0 || acc[acc.length - 1].name !== date) {
             acc.push({ name: date, total: index + 1 });

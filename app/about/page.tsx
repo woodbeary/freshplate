@@ -21,7 +21,7 @@ export default function About() {
       
       <p className="text-lg mb-8 text-center max-w-3xl mx-auto">
         FreshPlate is a revolutionary meal kit service that brings restaurant-quality dishes to your home kitchen. 
-        Founded in 2020, we've been on a mission to transform the way people experience food at home.
+        Founded in 2020, we&apos;ve been on a mission to transform the way people experience food at home.
       </p>
       
       <Card className="mb-8">
@@ -30,7 +30,7 @@ export default function About() {
         </CardHeader>
         <CardContent>
           <p className="mb-6">
-            FreshPlate was born out of a simple idea: What if we could bring the excitement and quality of restaurant dining into people's homes? 
+            FreshPlate was born out of a simple idea: What if we could bring the excitement and quality of restaurant dining into people&apos;s homes? 
             Our founders, passionate food lovers and tech enthusiasts, set out to create a service that would make this possible.
           </p>
           <div className="flex justify-center">

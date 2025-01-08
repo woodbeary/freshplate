@@ -56,7 +56,7 @@ export default function FAQ() {
       </Accordion>
       
       <div className="text-center">
-        <p className="text-lg mb-6">Still have questions? We're here to help!</p>
+        <p className="text-lg mb-6">Still have questions? We&apos;re here to help!</p>
         
         <Button asChild className="bg-green-600 hover:bg-green-700 text-white">
           <Link href="/contact">Contact Us</Link>

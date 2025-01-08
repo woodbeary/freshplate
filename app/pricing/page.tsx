@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { CheckCircle2, ArrowLeft } from "lucide-react";
-import { motion } from "framer-motion";
 import InstacartLogo from '@/components/InstacartLogo';
 
 const pricingPlans = [

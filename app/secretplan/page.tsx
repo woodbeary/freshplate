@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { Eye, ChevronDown, ChevronUp, Edit2, Save, X, Plus, Trash2, Loader } from 'lucide-react';
+import { Eye, ChevronDown, ChevronUp, Edit2, Save, Plus, Trash2, Loader } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -325,7 +325,7 @@ const SecretPlanPage = () => {
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Remove task (Note: This is mock data and won't be saved)</p>
+                          <p>Remove task (Note: This is mock data and won&apos;t be saved)</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -426,7 +426,7 @@ const SecretPlanPage = () => {
             <DialogDescription className="text-gray-300">
               Are you sure you want to delete this task? This action cannot be undone.
               <br />
-              <span className="text-yellow-500">Note: This is mock data and won't be permanently saved.</span>
+              <span className="text-yellow-500">Note: This is mock data and won&apos;t be permanently saved.</span>
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="sm:justify-start">
@@ -452,7 +452,7 @@ const SecretPlanPage = () => {
 
       {showMessage && (
         <div className="fixed bottom-4 right-4 bg-yellow-500 text-black px-4 py-2 rounded shadow-lg z-50">
-          Note: Changes are not saved to a database and will be lost on refresh. - Jack
+          <p>Note: Changes are not saved to a database and will be lost on refresh. - Jack</p>
         </div>
       )}
     </div>

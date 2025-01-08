@@ -1,10 +1,10 @@
 # FreshPlate Project Overview
 
 ## Concept
-FreshPlate is a personalized meal planning service that combines restaurant-inspired dishes with individual health goals. It utilizes OpenTable for restaurant preferences, AI for recipe generation, and Instacart for ingredient delivery.
+FreshPlate is a personalized meal planning service that combines restaurant-inspired dishes with individual health goals. It utilizes Yelp for restaurant and menu data, AI for recipe generation, and Instacart for ingredient delivery.
 
 ## Key Features
-1. OpenTable integration for restaurant and dish preferences
+1. Yelp integration for detailed restaurant and menu data
 2. AI-powered personalized meal plan generation
 3. Health goal integration and nutritional planning
 4. Automated grocery list creation and Instacart delivery integration
@@ -15,7 +15,7 @@ FreshPlate is a personalized meal planning service that combines restaurant-insp
 - Frontend: Next.js 14 with TypeScript
 - Backend: Serverless functions (Vercel)
 - Database: Firebase Firestore
-- APIs: OpenTable, Instacart, OpenAI (or alternative LLM)
+- APIs: Yelp, Instacart, OpenAI (or alternative LLM)
 - Styling: Tailwind CSS with Shadcn UI components
 - Authentication: Firebase Authentication
 
@@ -23,7 +23,7 @@ FreshPlate is a personalized meal planning service that combines restaurant-insp
 1. User Interface Layer (Next.js)
 2. Application Layer (Serverless functions)
 3. Data Layer (Firebase Firestore)
-4. External Services Layer (OpenTable, Instacart, LLM APIs)
+4. External Services Layer (Yelp, Instacart, LLM APIs)
 
 ## Core Modules
 1. User Management
@@ -35,16 +35,16 @@ FreshPlate is a personalized meal planning service that combines restaurant-insp
 7. Subscription Handler
 
 ## API Integrations
-- OpenTable: Restaurant and menu data
+- Yelp: Rich restaurant data, detailed menu items, and food-specific reviews
 - Instacart: Grocery inventory and delivery
 - LLM (e.g., OpenAI): Recipe generation and adaptation
 
 ## Data Models
 1. User Profile
-2. Meal Preferences
+2. Restaurant and Dish Preferences
 3. Health Goals
 4. Meal Plans
-5. Recipes
+5. Recipes (with source restaurant inspiration)
 6. Grocery Lists
 7. Subscriptions
 
@@ -80,12 +80,12 @@ FreshPlate is a personalized meal planning service that combines restaurant-insp
 
 ## MVP Development Roadmap
 1. User authentication and profile creation
-2. Restaurant and dish preference selection
-3. Basic meal plan generation
+2. Location-based restaurant search and dish discovery
+3. Basic meal plan generation from restaurant dishes
 4. Grocery list creation
 5. Instacart integration for delivery
 6. Simple subscription management
-7. MVP dashboard for meal viewing and basic modifications
+7. MVP dashboard with card-based restaurant/dish UI
 
 ## Future Technical Enhancements
 - Machine learning for improved meal recommendations

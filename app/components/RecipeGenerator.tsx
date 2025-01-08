@@ -28,11 +28,11 @@ export function RecipeGenerator() {
       dietary,
       servings,
     },
-    onResponse: (response) => {
+    onResponse: () => {
       // Optional: Handle streaming response events
       console.log('Streaming response started');
     },
-    onFinish: (completion) => {
+    onFinish: () => {
       // Optional: Handle completion
       console.log('Generation completed');
     },
@@ -129,13 +129,13 @@ export function RecipeGenerator() {
             <ReactMarkdown 
               className="prose prose-green max-w-none"
               components={{
-                h1: ({node, ...props}) => <h1 className="text-2xl font-bold mb-4 text-green-800" {...props} />,
-                h2: ({node, ...props}) => <h2 className="text-xl font-semibold mb-3 text-green-700" {...props} />,
-                h3: ({node, ...props}) => <h3 className="text-lg font-semibold mb-2 text-green-600" {...props} />,
-                ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-4" {...props} />,
-                ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-4" {...props} />,
-                li: ({node, ...props}) => <li className="mb-1" {...props} />,
-                p: ({node, ...props}) => <p className="mb-4" {...props} />
+                h1: (props) => <h1 className="text-2xl font-bold mb-4 text-green-800" {...props} />,
+                h2: (props) => <h2 className="text-xl font-semibold mb-3 text-green-700" {...props} />,
+                h3: (props) => <h3 className="text-lg font-semibold mb-2 text-green-600" {...props} />,
+                ul: (props) => <ul className="list-disc pl-6 mb-4" {...props} />,
+                ol: (props) => <ol className="list-decimal pl-6 mb-4" {...props} />,
+                li: (props) => <li className="mb-1" {...props} />,
+                p: (props) => <p className="mb-4" {...props} />
               }}
             >
               {completion}

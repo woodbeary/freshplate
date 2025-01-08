@@ -111,9 +111,9 @@ export default function Home() {
         <FadeInSection>
           <section className="py-12 bg-white">
             <div className="max-w-4xl mx-auto px-4">
-              <h2 className="text-3xl font-bold mb-6 text-green-800 text-center">Why What You Eat Matters—And How Fresh Plate Makes It Easier.</h2>
+              <h2 className="text-3xl font-bold mb-6 text-green-800 text-center">Why What You Eat Matters&mdash;And How Fresh Plate Makes It Easier.</h2>
               <p className="text-lg mb-6 text-center text-gray-600">
-                At Fresh Plate, we believe eating well shouldn't mean sacrificing the foods you love or spending hours meal planning. We turn your favorite restaurant-inspired meals into personalized plans that fit your health goals, with groceries delivered right to your door.
+                At Fresh Plate, we believe eating well shouldn&apos;t mean sacrificing the foods you love or spending hours meal planning. We turn your favorite restaurant-inspired meals into personalized plans that fit your health goals, with groceries delivered right to your door.
               </p>
               <p className="text-lg mb-6 text-center text-gray-600">
                 Food profoundly impacts our daily lives—how we feel, perform, and live. Fresh Plate helps you eat delicious, healthy meals effortlessly, so you can focus on enjoying your life.
@@ -155,7 +155,7 @@ export default function Home() {
               <h2 className="text-3xl font-bold mb-8 text-center text-green-800">What People Are Saying</h2>
               <Card className="bg-green-50">
                 <CardContent className="p-6">
-                  <p className="text-lg mb-4 text-gray-700">"Fresh Plate made healthy eating effortless. I love that I can enjoy my favorite foods and still meet my health goals!"</p>
+                  <p className="text-lg mb-4 text-gray-700">&quot;Fresh Plate made healthy eating effortless. I love that I can enjoy my favorite foods and still meet my health goals!&quot;</p>
                   <p className="text-sm text-green-700 font-semibold">- Sarah Johnson, San Francisco</p>
                 </CardContent>
               </Card>
