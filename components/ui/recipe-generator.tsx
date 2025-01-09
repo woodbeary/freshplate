@@ -19,8 +19,9 @@ import {
 } from "@/components/ui/tooltip";
 import { getLocationInfo } from "@/lib/utils";
 import { PeopleManager, type Person } from "./people-manager";
-import { RecipeCard } from "./recipe-card";
 import { cn } from "@/lib/utils";
+import { useSwipeable } from 'react-swipeable';
+import { Tilt } from 'react-tilt';
 
 declare global {
   interface Window {
@@ -87,16 +88,34 @@ interface Ingredient {
 }
 
 export interface Recipe {
-  title: string;
-  cookingTime: string;
+  recipeName: string;
+  context: string;
+  ingredients: string[];
+  method: string[];
+  chefNotes: string[];
+  shoppingList: ShoppingListItem[];
   difficulty: string;
-  localContext: string;
+  confidence: number;
+  cookingTime: string;
   weatherContext: string;
-  instacartUrl: string;
-  ingredients: Ingredient[];
-  instructions: string[];
-  notes: string[];
+  locationContext: string;
+  instacartUrl?: string;
 }
+
+const getCookingTime = (difficulty: string) => {
+  switch (difficulty) {
+    case 'easy':
+      return 'under 30 minutes';
+    case 'medium':
+      return '30-60 minutes';
+    case 'difficult':
+      return '1-2 hours';
+    case 'expert':
+      return '2+ hours';
+    default:
+      return '30-60 minutes';
+  }
+};
 
 // Simple SVG animations
 const AnimatedSVG = ({ type }: { type: 'location' | 'servings' | 'chef' | 'dietary' | 'cooking' | 'people' }) => {
@@ -141,6 +160,154 @@ const AnimatedSVG = ({ type }: { type: 'location' | 'servings' | 'chef' | 'dieta
   );
 };
 
+const RecipeCard = ({ recipe, servings, onSwipe }: { recipe: Recipe; servings: string; onSwipe: (dir: 'left' | 'right') => void }) => {
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragX, setDragX] = useState(0);
+  
+  const handlers = useSwipeable({
+    onSwipeStart: () => setIsDragging(true),
+    onSwiping: (e) => setDragX(e.deltaX),
+    onSwiped: (e) => {
+      setIsDragging(false);
+      setDragX(0);
+      if (Math.abs(e.deltaX) > 100) {
+        onSwipe(e.deltaX > 0 ? 'right' : 'left');
+      }
+    },
+    trackMouse: true,
+    preventScrollOnSwipe: true
+  });
+
+  const tiltOptions = {
+    max: 15,
+    scale: 1.05,
+    speed: 1000,
+    transition: true,
+    reset: true,
+    perspective: 1000,
+  };
+
+  const dragStyle = {
+    transform: `translateX(${dragX}px) rotate(${dragX / 20}deg)`,
+    opacity: 1 - Math.abs(dragX) / 500,
+  };
+
+  return (
+    <Tilt options={tiltOptions} style={{ transformStyle: 'preserve-3d' }}>
+      <div 
+        {...handlers}
+        className={cn(
+          "bg-white rounded-xl shadow-lg p-6 max-w-xl w-full mx-auto",
+          "transition-all duration-300 cursor-grab active:cursor-grabbing",
+          "hover:shadow-xl transform-gpu",
+          isDragging ? "scale-[1.02]" : "scale-100"
+        )}
+        style={dragStyle}
+      >
+        <div style={{ transform: 'translateZ(20px)' }}>
+          <h1 className="text-2xl font-semibold mb-4">{recipe.recipeName}</h1>
+          
+          <div className="flex flex-wrap items-center gap-4 mb-6 text-gray-600">
+            <div className="flex items-center gap-2">
+              <Clock className="h-5 w-5" />
+              <span>{recipe.cookingTime}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              <span>{servings} servings</span>
+            </div>
+            <Badge variant="outline" className="font-normal">
+              {recipe.difficulty}
+            </Badge>
+          </div>
+
+          <div className="space-y-4">
+            <div className="p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+              <div className="flex gap-3">
+                <MapPin className="h-5 w-5 text-green-600 flex-shrink-0" />
+                <p className="text-sm text-gray-600">{recipe.locationContext}</p>
+              </div>
+            </div>
+
+            <div className="p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+              <div className="flex gap-3">
+                <Cloud className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                <p className="text-sm text-gray-600">{recipe.weatherContext}</p>
+              </div>
+            </div>
+
+            {recipe.context && (
+              <div className="p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                <div className="flex gap-3">
+                  <ChefHat className="h-5 w-5 text-green-600 flex-shrink-0" />
+                  <p className="text-sm text-gray-600">{recipe.context}</p>
+                </div>
+              </div>
+            )}
+
+            <Accordion type="single" collapsible>
+              <AccordionItem value="ingredients">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-2">
+                    <ShoppingBasket className="h-5 w-5 text-green-600" />
+                    <span>Ingredients</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-2">
+                    {recipe.ingredients?.map((ingredient, index) => (
+                      <div 
+                        key={index} 
+                        className="p-3 bg-gray-50 rounded-lg text-sm hover:bg-gray-100 transition-colors"
+                      >
+                        {ingredient}
+                      </div>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="method">
+                <AccordionTrigger>
+                  <div className="flex items-center gap-2">
+                    <ListOrdered className="h-5 w-5 text-green-600" />
+                    <span>Instructions</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3">
+                    {recipe.method?.map((step, index) => (
+                      <div 
+                        key={index} 
+                        className="flex gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                      >
+                        <span className="text-green-600 font-medium">{index + 1}.</span>
+                        <p className="text-sm">{step}</p>
+                      </div>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+
+          {recipe.instacartUrl && (
+            <div className="mt-6">
+              <Button 
+                className="w-full flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform"
+                onClick={() => window.open(recipe.instacartUrl, '_blank')}
+              >
+                <ShoppingCart className="h-5 w-5" />
+                View in Instacart
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+    </Tilt>
+  );
+};
+
 export function RecipeGenerator() {
   const [preferences, setPreferences] = useState('');
   const [dietary, setDietary] = useState('');
@@ -166,6 +333,9 @@ export function RecipeGenerator() {
   const [mealType, setMealType] = useState<'breakfast' | 'lunch' | 'dinner'>('dinner');
   const [timezone, setTimezone] = useState('');
   const [language, setLanguage] = useState<'en' | 'es' | 'zh' | 'vi' | 'tl' | 'ko'>('en');
+  const [isTranslateInitialized, setIsTranslateInitialized] = useState(false);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [currentRecipeIndex, setCurrentRecipeIndex] = useState(0);
 
   const languageOptions = {
     'en': 'English',
@@ -199,68 +369,70 @@ export function RecipeGenerator() {
     setTimezone(tz);
   }, []);
 
-  const handleSubmit = async () => {
-    setIsLoading(true);
-    setError(null);
-    setRecipe(null);
-
-    try {
-      const response = await fetch('/api/recipe', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          zipCode,
-          servings,
-          dietary,
-          additionalInfo,
-          people,
-          difficulty,
-          mealType,
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          language
-        }),
+  useEffect(() => {
+    if (recipe?.difficulty) {
+      setRecipe(prev => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          cookingTime: getCookingTime(prev.difficulty)
+        };
       });
+    }
+  }, [recipe?.difficulty]);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to generate recipe');
-      }
+  const handleSubmit = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
 
-      const data = await response.json();
-      
-      // Improved recipe parsing
-      const recipeData: Recipe = {
-        title: data.recipeName || '',
-        cookingTime: '30-45 minutes',
-        difficulty,
-        localContext: data.context || '',
-        weatherContext: data.weatherContext || '',
-        instacartUrl: '',
-        ingredients: data.ingredients?.map((item: string) => ({
-          item,
-          instacartUrl: data.shoppingList?.find((sl: any) => 
-            sl.ingredient.trim() === item.trim()
-          )?.link || ''
-        })) || [],
-        instructions: data.method || [],
-        notes: data.chefNotes || []
-      };
+      // Generate three recipes in parallel
+      const responses = await Promise.all(
+        Array(3).fill(null).map(() =>
+          fetch('/api/recipe', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              zipCode,
+              dietary,
+              servings,
+              additionalInfo,
+              difficulty,
+              people,
+              mealType
+            }),
+          }).then(res => {
+            if (!res.ok) throw new Error('Failed to generate recipe');
+            return res.json();
+          })
+        )
+      );
 
-      // Set Instacart URL if available
-      const fullRecipeItem = data.shoppingList?.find((item: any) => item.isFullRecipe);
-      if (fullRecipeItem) {
-        recipeData.instacartUrl = fullRecipeItem.link;
-      }
+      // Transform the responses into Recipe objects
+      const recipeData = responses.map(data => ({
+        recipeName: data.recipeName,
+        context: data.context,
+        ingredients: data.ingredients,
+        method: data.method,
+        chefNotes: data.chefNotes,
+        shoppingList: data.shoppingList,
+        difficulty: data.difficulty,
+        confidence: data.confidence,
+        cookingTime: getCookingTime(data.difficulty),
+        weatherContext: data.weatherContext,
+        locationContext: data.locationContext,
+        instacartUrl: data.shoppingList.find((item: ShoppingListItem) => item.isFullRecipe)?.link
+      }));
 
-      setRecipe(recipeData);
-      setShoppingList(data.shoppingList || []);
+      setRecipes(recipeData);
+      setRecipe(recipeData[0]);
+      setCurrentRecipeIndex(0);
       setStep('recipe');
+      setIsLoading(false);
     } catch (err) {
-      console.error('Error:', err);
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
-    } finally {
+      setError(err instanceof Error ? err.message : 'An error occurred');
       setIsLoading(false);
     }
   };
@@ -379,15 +551,15 @@ export function RecipeGenerator() {
   const handleShare = async () => {
     if (!recipe) return;
 
-    const shareText = `Check out this ${recipe.difficulty} recipe for ${recipe.title} on FreshPlate!\n\n` +
+    const shareText = `Check out this ${recipe.difficulty} recipe for ${recipe.recipeName} on FreshPlate!\n\n` +
       `🕒 ${recipe.cookingTime}\n` +
       `👥 ${servings} servings\n\n` +
-      `${recipe.localContext.split('.')[0]}.`;
+      `${recipe.locationContext.split('.')[0]}.`;
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `${recipe.title} - FreshPlate Recipe`,
+          title: `${recipe.recipeName} - FreshPlate Recipe`,
           text: shareText,
           url: window.location.href
         });
@@ -396,6 +568,20 @@ export function RecipeGenerator() {
           console.error('Error sharing:', error);
         }
       }
+    }
+  };
+
+  const showNextRecipe = () => {
+    if (currentRecipeIndex < recipes.length - 1) {
+      setCurrentRecipeIndex(prev => prev + 1);
+      setRecipe(recipes[currentRecipeIndex + 1]);
+    }
+  };
+
+  const showPreviousRecipe = () => {
+    if (currentRecipeIndex > 0) {
+      setCurrentRecipeIndex(prev => prev - 1);
+      setRecipe(recipes[currentRecipeIndex - 1]);
     }
   };
 
@@ -416,6 +602,35 @@ export function RecipeGenerator() {
         case 1:
           return (
             <div className="space-y-4">
+              <div className="flex items-center justify-between mb-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                  onClick={() => {
+                    if (isTranslateInitialized) return;
+                    setIsTranslateInitialized(true);
+                    
+                    const script = document.createElement('script');
+                    script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+                    document.body.appendChild(script);
+                    window.googleTranslateElementInit = function() {
+                      const google = (window as any).google;
+                      new google.translate.TranslateElement({
+                        pageLanguage: 'en',
+                        includedLanguages: 'es,zh,vi,tl,ko',
+                        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+                      }, 'google_translate_element');
+                    };
+                  }}
+                  disabled={isTranslateInitialized}
+                >
+                  <Globe className="h-4 w-4" />
+                  {isTranslateInitialized ? 'Translation Available' : 'Translate Page'}
+                </Button>
+              </div>
+              <div id="google_translate_element" className="mb-4"></div>
+
               <div className="flex items-center gap-2 mb-4 sm:mb-6">
                 <MapPin className="h-5 w-5 text-green-600" />
                 <h2 className="text-base sm:text-lg font-semibold">Where are you located?</h2>
@@ -639,25 +854,6 @@ export function RecipeGenerator() {
                   />
                   <p className="text-sm text-gray-500 mt-2">Leave blank if none</p>
                 </div>
-
-                <div className="pt-4 border-t">
-                  <Label htmlFor="language">Recipe Language</Label>
-                  <Select value={language} onValueChange={(value: 'en' | 'es' | 'zh' | 'vi' | 'tl' | 'ko') => setLanguage(value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select language" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(languageOptions).map(([code, name]) => (
-                        <SelectItem key={code} value={code}>
-                          {name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-sm text-gray-500 mt-2">
-                    This will generate the recipe in your chosen language. For the rest of the page, use your browser's built-in translation.
-                  </p>
-                </div>
               </div>
             </div>
           );
@@ -713,7 +909,7 @@ export function RecipeGenerator() {
     
     return (
       <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-semibold mb-4">{recipe.title}</h1>
+        <h1 className="text-xl sm:text-2xl font-semibold mb-4">{recipe.recipeName}</h1>
         
         <div className="flex flex-wrap items-center gap-4 sm:gap-6 mb-4 sm:mb-6 text-gray-600">
           <div className="flex items-center gap-2">
@@ -735,7 +931,7 @@ export function RecipeGenerator() {
               <div className="flex-shrink-0">
                 <MapPin className="h-4 sm:h-5 w-4 sm:w-5 text-green-600" />
               </div>
-              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">{recipe.localContext}</p>
+              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">{recipe.locationContext}</p>
             </div>
           </div>
 
@@ -747,33 +943,18 @@ export function RecipeGenerator() {
               <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">{recipe.weatherContext}</p>
             </div>
           </div>
+
+          {recipe.context && (
+            <div className="p-3 sm:p-4 bg-green-50 rounded-lg">
+              <div className="flex gap-3 sm:gap-4">
+                <div className="flex-shrink-0">
+                  <ChefHat className="h-4 sm:h-5 w-4 sm:w-5 text-green-600" />
+                </div>
+                <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">{recipe.context}</p>
+              </div>
+            </div>
+          )}
         </div>
-
-        {recipe && (
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2 mt-4"
-            onClick={() => {
-              const script = document.createElement('script');
-              script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-              document.body.appendChild(script);
-              window.googleTranslateElementInit = function() {
-                const google = (window as any).google;
-                new google.translate.TranslateElement({
-                  pageLanguage: 'en',
-                  includedLanguages: 'es,zh,vi,tl,ko',
-                  layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-                }, 'google_translate_element');
-              };
-            }}
-          >
-            <Globe className="h-4 w-4" />
-            Translate Page
-          </Button>
-        )}
-
-        <div id="google_translate_element" className="mt-2"></div>
       </div>
     );
   };
@@ -942,122 +1123,69 @@ export function RecipeGenerator() {
           )}
 
           {step === 'recipe' && (
-            <div className={`transition-opacity duration-300 ${isLoading ? 'opacity-50' : 'opacity-100'}`}>
-              {recipe ? (
-                <div className="p-3 sm:p-6 pb-20">
-                  {renderRecipeHeader()}
-                  <div className="space-y-6">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="ingredients">
-                        <AccordionTrigger className="flex items-center justify-between py-4 w-full text-left hover:bg-gray-50 transition-colors">
-                          <div className="flex items-center gap-2">
-                            <ShoppingBasket className="h-4 sm:h-5 w-4 sm:w-5 text-green-600" />
-                            <h2 className="text-base sm:text-lg font-medium">Ingredients</h2>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <div className="space-y-2 pt-2">
-                            {recipe.ingredients?.map((ingredient, index) => (
-                              <div
-                                key={index}
-                                className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg"
-                              >
-                                <span className="text-sm sm:text-base text-gray-700">{ingredient.item}</span>
-                                {ingredient.instacartUrl && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="text-gray-600 hover:text-gray-900 h-8 w-8 p-0"
-                                    onClick={() => window.open(ingredient.instacartUrl, '_blank')}
-                                  >
-                                    <ShoppingCart className="h-4 w-4" />
-                                  </Button>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
+            <div className="relative flex-1 flex flex-col">
+              {isLoading ? (
+                renderLoading()
+              ) : recipe ? (
+                <>
+                  <div className="absolute top-4 right-4 z-10">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setStep('form');
+                        setCurrentStep(1);
+                        setRecipe(null);
+                        setRecipes([]);
+                      }}
+                    >
+                      Start Over
+                    </Button>
+                  </div>
 
-                      <AccordionItem value="instructions">
-                        <AccordionTrigger className="flex items-center justify-between py-4 w-full text-left hover:bg-gray-50 transition-colors">
-                          <div className="flex items-center gap-2">
-                            <ListOrdered className="h-4 sm:h-5 w-4 sm:w-5 text-green-600" />
-                            <h2 className="text-base sm:text-lg font-medium">Instructions</h2>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <div className="space-y-3 sm:space-y-4 pt-2">
-                            {recipe.instructions?.map((instruction, index) => (
-                              <div
-                                key={index}
-                                className="flex gap-3 sm:gap-4 p-3 sm:p-4 bg-gray-50 rounded-lg"
-                              >
-                                <span className="text-green-600 font-medium text-sm sm:text-base">{index + 1}.</span>
-                                <p className="text-sm sm:text-base text-gray-700">{instruction}</p>
-                              </div>
-                            ))}
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-
-                      <AccordionItem value="notes">
-                        <AccordionTrigger className="flex items-center justify-between py-4 w-full text-left hover:bg-gray-50 transition-colors">
-                          <div className="flex items-center gap-2">
-                            <FileText className="h-4 sm:h-5 w-4 sm:w-5 text-green-600" />
-                            <h2 className="text-base sm:text-lg font-medium">Chef's Notes</h2>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <div className="space-y-2 sm:space-y-3 pt-2">
-                            {recipe.notes?.map((note, index) => (
-                              <div
-                                key={index}
-                                className="flex items-start gap-3 p-3 sm:p-4 bg-gray-50 rounded-lg"
-                              >
-                                <span className="text-green-600 text-sm sm:text-base">💡</span>
-                                <p className="text-sm sm:text-base text-gray-700">{note}</p>
-                              </div>
-                            ))}
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-
-                    {recipe.instacartUrl && (
-                      <div className="sticky bottom-0 pt-3 sm:pt-4 pb-4 sm:pb-6 bg-white border-t">
-                        <div className="flex gap-2">
-                          <Button
-                            size="lg"
-                            className="flex-1 flex items-center justify-center gap-2 text-sm sm:text-base py-2 sm:py-3"
-                            onClick={() => window.open(recipe.instacartUrl, '_blank')}
-                          >
-                            <ShoppingCart className="h-4 sm:h-5 w-4 sm:w-5" />
-                            View in Instacart
-                          </Button>
-                          {'share' in navigator && (
-                            <Button
-                              variant="outline"
-                              size="lg"
-                              className="flex items-center justify-center gap-2 text-sm sm:text-base py-2 sm:py-3"
-                              onClick={handleShare}
-                            >
-                              <Share className="h-4 sm:h-5 w-4 sm:w-5" />
-                              <span className="sr-only">Share Recipe</span>
-                            </Button>
-                          )}
-                        </div>
+                  <div className="flex-1 p-4 overflow-auto">
+                    <div className="text-center mb-4 text-sm text-gray-500">
+                      Recipe {currentRecipeIndex + 1} of {recipes.length}
+                    </div>
+                    
+                    <div className="relative">
+                      <RecipeCard
+                        recipe={recipe}
+                        servings={servings}
+                        onSwipe={(dir) => {
+                          if (dir === 'left' && currentRecipeIndex > 0) {
+                            showPreviousRecipe();
+                          } else if (dir === 'right' && currentRecipeIndex < recipes.length - 1) {
+                            showNextRecipe();
+                          }
+                        }}
+                      />
+                      
+                      <div className="flex justify-center gap-4 mt-6">
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          onClick={showPreviousRecipe}
+                          disabled={currentRecipeIndex === 0}
+                        >
+                          ←
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          onClick={showNextRecipe}
+                          disabled={currentRecipeIndex === recipes.length - 1}
+                        >
+                          →
+                        </Button>
                       </div>
-                    )}
-
-                    <div className="text-center text-sm text-gray-500 pt-4 border-t">
-                      <p>Generated with ❤️ by FreshPlate</p>
-                      <p className="mt-1">www.freshplate.ai</p>
                     </div>
                   </div>
-                </div>
+                </>
               ) : (
-                renderLoading()
+                <div className="text-center py-12">
+                  <p className="text-lg text-gray-600">No recipe generated yet</p>
+                </div>
               )}
             </div>
           )}

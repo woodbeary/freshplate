@@ -151,6 +151,42 @@ const languageMap: Record<SupportedLanguage, string> = {
   'ko': 'Korean'
 };
 
+// Add difficulty level descriptions
+const DIFFICULTY_GUIDELINES = {
+  easy: `
+    - Use basic cooking techniques only (e.g., boiling, simple sautéing)
+    - Minimal knife work, mostly basic chopping
+    - Maximum of 5-6 ingredients
+    - No complex timing or temperature management
+    - Simple one-pan or one-pot recipes
+    - Total cooking time under 30 minutes
+  `,
+  medium: `
+    - Intermediate techniques (e.g., sauce-making, proper knife work)
+    - Multiple cooking methods may be combined
+    - 6-10 ingredients
+    - Some timing coordination required
+    - May use multiple pans/pots
+    - Total cooking time 30-60 minutes
+  `,
+  difficult: `
+    - Advanced techniques (e.g., pastry work, complex sauces)
+    - Precise knife skills required
+    - 10+ ingredients with some specialty items
+    - Complex timing and temperature management
+    - Multiple components cooked separately
+    - Total cooking time 1-2 hours
+  `,
+  expert: `
+    - Professional techniques (e.g., sous vide, smoking, lamination)
+    - Expert knife skills and precision required
+    - Specialty ingredients and equipment needed
+    - Complex multi-step processes
+    - Multiple components with precise timing
+    - Total cooking time 2+ hours
+  `
+};
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -162,7 +198,6 @@ export async function POST(req: Request) {
       difficulty, 
       people, 
       mealType, 
-      timezone,
       language 
     } = body;
 
@@ -206,12 +241,6 @@ export async function POST(req: Request) {
       weatherContext = weatherDesc;
     }
 
-    // Get current time in user's timezone
-    const userTime = new Date().toLocaleString('en-US', { timeZone: timezone });
-    const userDate = new Date(userTime);
-    const currentSeason = getSeason(userDate);
-    const timeOfDay = getTimeOfDay(userDate);
-
     // Format people information for the prompt
     const peopleContext = people?.length > 0 
       ? `\nDiners:\n${people.map((p: { name: string; description?: string }) => 
@@ -219,28 +248,33 @@ export async function POST(req: Request) {
       : '';
 
     // Generate recipe using Gemini
-    const prompt = `Create a ${difficulty || 'medium'}-level ${mealType} recipe in ${languageMap[validLanguage]} that connects with the current season in ${locationContext}.
+    const prompt = `Create a ${difficulty || 'medium'}-level ${mealType} recipe that showcases the local ingredients and flavors of ${locationContext}.
 
-    Format your response exactly as follows (in ${languageMap[validLanguage]}):
+    The recipe MUST strictly follow these ${difficulty} level guidelines:
+    ${DIFFICULTY_GUIDELINES[difficulty as keyof typeof DIFFICULTY_GUIDELINES]}
+
+    Format your response exactly as follows:
 
     **Recipe Name:** (Clear, descriptive title appropriate for ${mealType})
 
     **Context:**
-    Brief explanation of why this recipe is perfect for ${mealType} during the current season and location. Include local ingredients and cultural significance.
+    Brief explanation connecting this recipe to the local ingredients and cultural elements of ${locationContext}. Consider both traditional and modern interpretations.
 
     **Equipment Needed:**
     - Essential tools only
     - List alternatives if possible
+    (Equipment should match the ${difficulty} difficulty level)
 
     **Ingredients:**
     - [exact measurement] [ingredient], [brief description if needed]
     (List each ingredient with a dash, in order of use)
+    (Number of ingredients should match ${difficulty} level requirements)
 
     **Method:**
     1. Clear, numbered steps
     2. Include exact temperatures and timings
     3. Describe visual/tactile cues for doneness
-    (Number each step, be precise)
+    (Number each step, be precise, complexity should match ${difficulty} level)
 
     **Chef's Notes:**
     - Essential tips for success
@@ -250,15 +284,15 @@ export async function POST(req: Request) {
 
     Additional Context:
     - Location: ${locationContext}
-    - Season: ${currentSeason}
     - Weather: ${weatherContext}
-    - Time of Day: ${timeOfDay}
     - Meal Type: ${mealType}
     - Servings: ${servings}
     - Dietary Needs: ${dietary || 'None specified'}
     - Health Goals: ${additionalInfo || 'General wellness'}${peopleContext}
 
-    Keep the recipe practical, seasonal, and focused on local ingredients. Make sure it's appropriate for ${mealType} and the current time of day (${timeOfDay}). The entire response should be in ${languageMap[validLanguage]}.`;
+    Focus on creating a unique and flavorful dish that combines local ingredients with cooking techniques appropriate for the ${difficulty} level. The recipe should be achievable for someone with the corresponding skill level, while still being challenging enough to match the difficulty rating. Consider the current weather (${weatherContext}) for appropriate cooking methods and serving temperature, but don't limit the recipe selection to only seasonal dishes.
+
+    Remember: This recipe MUST match the ${difficulty} difficulty level in terms of techniques, timing, and complexity. Do not include techniques or steps that exceed or fall below this difficulty level.`;
 
     const response = await model.generateContent(prompt);
     const result = response.response.text();
