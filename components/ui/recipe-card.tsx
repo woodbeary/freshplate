@@ -22,7 +22,7 @@ export function RecipeCard({ recipe, servings }: RecipeCardProps) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${recipe.title.toLowerCase().replace(/\s+/g, '-')}-recipe.html`;
+    link.download = `${recipe.recipeName.toLowerCase().replace(/\s+/g, '-')}-recipe.html`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -48,11 +48,13 @@ export function RecipeCard({ recipe, servings }: RecipeCardProps) {
           <div className="flex justify-center mb-4">
             <ChefHat className="h-12 w-12 text-green-600" />
           </div>
-          <h1 className="text-3xl font-serif mb-3">{recipe.title}</h1>
+          <h1 className="text-3xl font-serif mb-3">{recipe.recipeName}</h1>
           <p className="text-gray-600 italic mb-4 max-w-2xl mx-auto">
-            {recipe.localContext}
+            {recipe.context}
           </p>
-          <div className="flex items-center justify-center gap-6 text-gray-600">
+
+          {/* Recipe Meta Info */}
+          <div className="flex justify-center gap-6 text-gray-600">
             <div className="flex items-center gap-2">
               <Clock className="h-5 w-5" />
               <span>{recipe.cookingTime}</span>
@@ -64,55 +66,48 @@ export function RecipeCard({ recipe, servings }: RecipeCardProps) {
           </div>
         </div>
 
-        {/* Recipe Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Ingredients */}
-          <div>
-            <h2 className="text-xl font-serif mb-4 text-green-800">Ingredients</h2>
-            <ul className="space-y-2">
-              {recipe.ingredients.map((ingredient, index) => (
-                <li key={index} className="flex items-baseline gap-2">
-                  <span className="text-green-600">•</span>
-                  <span>{ingredient.item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Instructions */}
-          <div>
-            <h2 className="text-xl font-serif mb-4 text-green-800">Instructions</h2>
-            <ol className="space-y-4">
-              {recipe.instructions.map((instruction, index) => (
-                <li key={index} className="flex gap-4">
-                  <span className="font-serif text-green-600 font-bold">
-                    {index + 1}.
-                  </span>
-                  <p className="text-gray-700">{instruction}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
-
-        {/* Notes & Tips */}
-        <div className="mt-8 pt-6 border-t">
-          <h2 className="text-xl font-serif mb-4 text-green-800">Chef's Notes</h2>
-          <ul className="space-y-3">
-            {recipe.notes.map((note, index) => (
-              <li key={index} className="flex items-baseline gap-2">
-                <span className="text-green-600">💡</span>
-                <p className="text-gray-700">{note}</p>
+        {/* Ingredients */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">Ingredients</h2>
+          <ul className="space-y-2">
+            {recipe.ingredients.map((ingredient, index) => (
+              <li key={index} className="flex items-start gap-2">
+                <span className="text-green-600">•</span>
+                <span>{ingredient}</span>
               </li>
             ))}
           </ul>
         </div>
 
-        {/* Footer */}
-        <div className="mt-8 pt-6 border-t text-center text-gray-500 text-sm">
-          <p>Generated with ❤️ by FreshPlate</p>
-          <p className="mt-1">www.freshplate.ai</p>
+        {/* Instructions */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">Instructions</h2>
+          <ol className="space-y-4">
+            {recipe.method.map((step, index) => (
+              <li key={index} className="flex gap-4">
+                <span className="font-semibold text-green-600 flex-shrink-0">
+                  {index + 1}.
+                </span>
+                <span>{step}</span>
+              </li>
+            ))}
+          </ol>
         </div>
+
+        {/* Chef's Notes */}
+        {recipe.chefNotes && recipe.chefNotes.length > 0 && (
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Chef's Notes</h2>
+            <ul className="space-y-2">
+              {recipe.chefNotes.map((note, index) => (
+                <li key={index} className="flex items-start gap-2">
+                  <span className="text-green-600">•</span>
+                  <span>{note}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </Card>
 
       <style jsx global>{`

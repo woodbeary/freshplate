@@ -20,8 +20,6 @@ import {
 import { getLocationInfo } from "@/lib/utils";
 import { PeopleManager, type Person } from "./people-manager";
 import { cn } from "@/lib/utils";
-import { useSwipeable } from 'react-swipeable';
-import { Tilt } from 'react-tilt';
 
 declare global {
   interface Window {
@@ -117,6 +115,153 @@ const getCookingTime = (difficulty: string) => {
   }
 };
 
+const RecipeCard = ({ 
+  recipe, 
+  servings, 
+  onSwipe,
+  onStartOver 
+}: { 
+  recipe: Recipe; 
+  servings: string; 
+  onSwipe: (dir: 'left' | 'right') => void;
+  onStartOver: () => void;
+}) => {
+  return (
+    <div className="bg-white rounded-xl shadow-lg p-6 w-full mx-auto relative min-h-[600px] flex flex-col">
+      <div>
+        <div className="flex justify-between items-start mb-4">
+          <h1 className="text-2xl font-semibold">{recipe.recipeName}</h1>
+          <div className="flex items-center gap-2 text-gray-600">
+            <MapPin className="h-4 w-4 text-green-600" />
+            <span className="text-sm">{recipe.locationContext.split('.')[0]}</span>
+          </div>
+        </div>
+        
+        <div className="flex flex-wrap items-center gap-4 mb-6 text-gray-600">
+          <div className="flex items-center gap-2">
+            <Clock className="h-5 w-5" />
+            <span>{recipe.cookingTime}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            <span>{servings} servings</span>
+          </div>
+          <Badge variant="outline" className="font-normal">
+            {recipe.difficulty}
+          </Badge>
+        </div>
+
+        <div className="space-y-4">
+          <div className="p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+            <div className="flex gap-3">
+              <Cloud className="h-5 w-5 text-blue-600 flex-shrink-0" />
+              <p className="text-sm text-gray-600">{recipe.weatherContext}</p>
+            </div>
+          </div>
+
+          {recipe.context && (
+            <div className="p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+              <div className="flex gap-3">
+                <ChefHat className="h-5 w-5 text-green-600 flex-shrink-0" />
+                <p className="text-sm text-gray-600">{recipe.context}</p>
+              </div>
+            </div>
+          )}
+
+          <Accordion type="single" collapsible>
+            <AccordionItem value="ingredients">
+              <AccordionTrigger>
+                <div className="flex items-center gap-2">
+                  <ShoppingBasket className="h-5 w-5 text-green-600" />
+                  <span>Ingredients</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-2">
+                  {recipe.ingredients?.map((ingredient, index) => (
+                    <div 
+                      key={index} 
+                      className="p-3 bg-gray-50 rounded-lg text-sm hover:bg-gray-100 transition-colors"
+                    >
+                      {ingredient}
+                    </div>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="method">
+              <AccordionTrigger>
+                <div className="flex items-center gap-2">
+                  <ListOrdered className="h-5 w-5 text-green-600" />
+                  <span>Instructions</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-3">
+                  {recipe.method?.map((step, index) => (
+                    <div 
+                      key={index} 
+                      className="flex gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <span className="text-green-600 font-medium">{index + 1}.</span>
+                      <p className="text-sm">{step}</p>
+                    </div>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+
+        <div className="mt-6 space-y-4">
+          <div className="flex gap-2">
+            <Button 
+              className="flex-1 flex items-center justify-center gap-2"
+              onClick={() => window.open(recipe.instacartUrl, '_blank')}
+            >
+              <ShoppingCart className="h-5 w-5" />
+              View in Instacart
+            </Button>
+            <Button
+              variant="outline"
+              onClick={async () => {
+                const shareText = `Check out this ${recipe.difficulty} recipe for ${recipe.recipeName} on FreshPlate!\n\n` +
+                  `🕒 ${recipe.cookingTime}\n` +
+                  `👥 ${servings} servings\n\n` +
+                  `${recipe.locationContext.split('.')[0]}.`;
+
+                if (navigator.share) {
+                  try {
+                    await navigator.share({
+                      title: `${recipe.recipeName} - FreshPlate Recipe`,
+                      text: shareText,
+                      url: window.location.href
+                    });
+                  } catch (error) {
+                    if (error instanceof Error && error.name !== 'AbortError') {
+                      console.error('Error sharing:', error);
+                    }
+                  }
+                }
+              }}
+            >
+              <Share className="h-5 w-5" />
+            </Button>
+          </div>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={onStartOver}
+          >
+            Start Over
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Simple SVG animations
 const AnimatedSVG = ({ type }: { type: 'location' | 'servings' | 'chef' | 'dietary' | 'cooking' | 'people' }) => {
   const animations = {
@@ -157,154 +302,6 @@ const AnimatedSVG = ({ type }: { type: 'location' | 'servings' | 'chef' | 'dieta
     <div className="text-green-600 transform transition-transform hover:scale-110">
       {animations[type]}
     </div>
-  );
-};
-
-const RecipeCard = ({ recipe, servings, onSwipe }: { recipe: Recipe; servings: string; onSwipe: (dir: 'left' | 'right') => void }) => {
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragX, setDragX] = useState(0);
-  
-  const handlers = useSwipeable({
-    onSwipeStart: () => setIsDragging(true),
-    onSwiping: (e) => setDragX(e.deltaX),
-    onSwiped: (e) => {
-      setIsDragging(false);
-      setDragX(0);
-      if (Math.abs(e.deltaX) > 100) {
-        onSwipe(e.deltaX > 0 ? 'right' : 'left');
-      }
-    },
-    trackMouse: true,
-    preventScrollOnSwipe: true
-  });
-
-  const tiltOptions = {
-    max: 15,
-    scale: 1.05,
-    speed: 1000,
-    transition: true,
-    reset: true,
-    perspective: 1000,
-  };
-
-  const dragStyle = {
-    transform: `translateX(${dragX}px) rotate(${dragX / 20}deg)`,
-    opacity: 1 - Math.abs(dragX) / 500,
-  };
-
-  return (
-    <Tilt options={tiltOptions} style={{ transformStyle: 'preserve-3d' }}>
-      <div 
-        {...handlers}
-        className={cn(
-          "bg-white rounded-xl shadow-lg p-6 max-w-xl w-full mx-auto",
-          "transition-all duration-300 cursor-grab active:cursor-grabbing",
-          "hover:shadow-xl transform-gpu",
-          isDragging ? "scale-[1.02]" : "scale-100"
-        )}
-        style={dragStyle}
-      >
-        <div style={{ transform: 'translateZ(20px)' }}>
-          <h1 className="text-2xl font-semibold mb-4">{recipe.recipeName}</h1>
-          
-          <div className="flex flex-wrap items-center gap-4 mb-6 text-gray-600">
-            <div className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              <span>{recipe.cookingTime}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              <span>{servings} servings</span>
-            </div>
-            <Badge variant="outline" className="font-normal">
-              {recipe.difficulty}
-            </Badge>
-          </div>
-
-          <div className="space-y-4">
-            <div className="p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
-              <div className="flex gap-3">
-                <MapPin className="h-5 w-5 text-green-600 flex-shrink-0" />
-                <p className="text-sm text-gray-600">{recipe.locationContext}</p>
-              </div>
-            </div>
-
-            <div className="p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
-              <div className="flex gap-3">
-                <Cloud className="h-5 w-5 text-blue-600 flex-shrink-0" />
-                <p className="text-sm text-gray-600">{recipe.weatherContext}</p>
-              </div>
-            </div>
-
-            {recipe.context && (
-              <div className="p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
-                <div className="flex gap-3">
-                  <ChefHat className="h-5 w-5 text-green-600 flex-shrink-0" />
-                  <p className="text-sm text-gray-600">{recipe.context}</p>
-                </div>
-              </div>
-            )}
-
-            <Accordion type="single" collapsible>
-              <AccordionItem value="ingredients">
-                <AccordionTrigger>
-                  <div className="flex items-center gap-2">
-                    <ShoppingBasket className="h-5 w-5 text-green-600" />
-                    <span>Ingredients</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-2">
-                    {recipe.ingredients?.map((ingredient, index) => (
-                      <div 
-                        key={index} 
-                        className="p-3 bg-gray-50 rounded-lg text-sm hover:bg-gray-100 transition-colors"
-                      >
-                        {ingredient}
-                      </div>
-                    ))}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="method">
-                <AccordionTrigger>
-                  <div className="flex items-center gap-2">
-                    <ListOrdered className="h-5 w-5 text-green-600" />
-                    <span>Instructions</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-3">
-                    {recipe.method?.map((step, index) => (
-                      <div 
-                        key={index} 
-                        className="flex gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                      >
-                        <span className="text-green-600 font-medium">{index + 1}.</span>
-                        <p className="text-sm">{step}</p>
-                      </div>
-                    ))}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-
-          {recipe.instacartUrl && (
-            <div className="mt-6">
-              <Button 
-                className="w-full flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform"
-                onClick={() => window.open(recipe.instacartUrl, '_blank')}
-              >
-                <ShoppingCart className="h-5 w-5" />
-                View in Instacart
-              </Button>
-            </div>
-          )}
-        </div>
-      </div>
-    </Tilt>
   );
 };
 
@@ -1127,61 +1124,50 @@ export function RecipeGenerator() {
               {isLoading ? (
                 renderLoading()
               ) : recipe ? (
-                <>
-                  <div className="absolute top-4 right-4 z-10">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
+                <div className="flex-1 p-4 overflow-auto">
+                  <div className="text-center mb-4 text-sm text-gray-500">
+                    Recipe {currentRecipeIndex + 1} of {recipes.length}
+                  </div>
+                  
+                  <div className="relative">
+                    <RecipeCard
+                      recipe={recipe}
+                      servings={servings}
+                      onSwipe={(dir) => {
+                        if (dir === 'left' && currentRecipeIndex > 0) {
+                          showPreviousRecipe();
+                        } else if (dir === 'right' && currentRecipeIndex < recipes.length - 1) {
+                          showNextRecipe();
+                        }
+                      }}
+                      onStartOver={() => {
                         setStep('form');
                         setCurrentStep(1);
                         setRecipe(null);
                         setRecipes([]);
                       }}
-                    >
-                      Start Over
-                    </Button>
-                  </div>
-
-                  <div className="flex-1 p-4 overflow-auto">
-                    <div className="text-center mb-4 text-sm text-gray-500">
-                      Recipe {currentRecipeIndex + 1} of {recipes.length}
-                    </div>
+                    />
                     
-                    <div className="relative">
-                      <RecipeCard
-                        recipe={recipe}
-                        servings={servings}
-                        onSwipe={(dir) => {
-                          if (dir === 'left' && currentRecipeIndex > 0) {
-                            showPreviousRecipe();
-                          } else if (dir === 'right' && currentRecipeIndex < recipes.length - 1) {
-                            showNextRecipe();
-                          }
-                        }}
-                      />
-                      
-                      <div className="flex justify-center gap-4 mt-6">
-                        <Button
-                          variant="outline"
-                          size="lg"
-                          onClick={showPreviousRecipe}
-                          disabled={currentRecipeIndex === 0}
-                        >
-                          ←
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="lg"
-                          onClick={showNextRecipe}
-                          disabled={currentRecipeIndex === recipes.length - 1}
-                        >
-                          →
-                        </Button>
-                      </div>
+                    <div className="flex justify-center gap-4 mt-6">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        onClick={showPreviousRecipe}
+                        disabled={currentRecipeIndex === 0}
+                      >
+                        ←
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        onClick={showNextRecipe}
+                        disabled={currentRecipeIndex === recipes.length - 1}
+                      >
+                        →
+                      </Button>
                     </div>
                   </div>
-                </>
+                </div>
               ) : (
                 <div className="text-center py-12">
                   <p className="text-lg text-gray-600">No recipe generated yet</p>

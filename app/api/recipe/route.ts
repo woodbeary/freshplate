@@ -449,31 +449,30 @@ function getTimeOfDay(date: Date): 'morning' | 'afternoon' | 'evening' | 'night'
 function getWeatherDescription(baseTemp: number, timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night'): string {
   const descriptions = {
     morning: [
-      'The crisp morning air suggests a hearty breakfast',
-      'As the sun rises, the temperature is perfect for light, energizing meals',
-      'The gentle morning breeze calls for comforting breakfast dishes'
+      `The crisp morning air is ${baseTemp}°F, perfect for a hearty breakfast`,
+      `As the sun rises, the temperature of ${baseTemp}°F is ideal for energizing meals`,
+      `The gentle morning breeze at ${baseTemp}°F calls for comforting breakfast dishes`
     ],
     afternoon: [
-      'The warm afternoon sun is ideal for fresh, vibrant dishes',
-      'The peak day temperature invites refreshing meal choices',
-      'The bright afternoon light complements colorful, seasonal ingredients'
+      `The afternoon temperature of ${baseTemp}°F is ideal for fresh, vibrant dishes`,
+      `At ${baseTemp}°F, the weather invites refreshing meal choices`,
+      `The ${baseTemp}°F afternoon warmth complements colorful, seasonal ingredients`
     ],
     evening: [
-      'The cooling evening air welcomes warming, satisfying dishes',
-      'As the day winds down, the temperature is perfect for family-style meals',
-      'The sunset brings a perfect atmosphere for intimate dining'
+      `The evening temperature of ${baseTemp}°F sets the mood for a satisfying dinner`,
+      `As the day cools to ${baseTemp}°F, it's perfect for a comforting meal`,
+      `The pleasant ${baseTemp}°F evening calls for flavorful dinner options`
     ],
     night: [
-      'The calm night air suggests soothing, relaxing flavors',
-      'The peaceful nighttime atmosphere calls for gentle, digestible dishes',
-      'The quiet night invites mindful, balanced eating'
+      `The night air at ${baseTemp}°F is perfect for cozy, warming dishes`,
+      `The cool ${baseTemp}°F night temperature suggests comforting flavors`,
+      `At ${baseTemp}°F, the night calls for satisfying late dishes`
     ]
-  } as const;
+  };
 
+  // Get random description for the time of day
   const timeDescriptions = descriptions[timeOfDay];
-  const randomIndex = Math.floor(Math.random() * timeDescriptions.length);
-  
-  return `${timeDescriptions[randomIndex]}. Current estimated temperature: ${Math.round(baseTemp)}°F.`;
+  return timeDescriptions[Math.floor(Math.random() * timeDescriptions.length)];
 }
 
 // Add this new endpoint for selected ingredients
