@@ -138,9 +138,39 @@ async function generateShoppingListLink(ingredients: string[]): Promise<string> 
   }
 }
 
+// Language type
+type SupportedLanguage = 'en' | 'es' | 'zh' | 'vi' | 'tl' | 'ko';
+
+// Language mapping for Gemini API
+const languageMap: Record<SupportedLanguage, string> = {
+  'en': 'English',
+  'es': 'Spanish',
+  'zh': 'Chinese',
+  'vi': 'Vietnamese',
+  'tl': 'Tagalog',
+  'ko': 'Korean'
+};
+
 export async function POST(req: Request) {
   try {
-    const { zipCode, dietary, servings, additionalInfo, difficulty, people } = await req.json();
+    const body = await req.json();
+    const { 
+      zipCode, 
+      dietary, 
+      servings, 
+      additionalInfo, 
+      difficulty, 
+      people, 
+      mealType, 
+      timezone,
+      language 
+    } = body;
+
+    // Validate and cast language to SupportedLanguage
+    const validLanguage: SupportedLanguage = (language || 'en') as SupportedLanguage;
+    if (!Object.keys(languageMap).includes(validLanguage)) {
+      throw new Error('Invalid language selected');
+    }
 
     if (!zipCode?.trim()) {
       return NextResponse.json(
@@ -176,6 +206,12 @@ export async function POST(req: Request) {
       weatherContext = weatherDesc;
     }
 
+    // Get current time in user's timezone
+    const userTime = new Date().toLocaleString('en-US', { timeZone: timezone });
+    const userDate = new Date(userTime);
+    const currentSeason = getSeason(userDate);
+    const timeOfDay = getTimeOfDay(userDate);
+
     // Format people information for the prompt
     const peopleContext = people?.length > 0 
       ? `\nDiners:\n${people.map((p: { name: string; description?: string }) => 
@@ -183,14 +219,14 @@ export async function POST(req: Request) {
       : '';
 
     // Generate recipe using Gemini
-    const prompt = `Create a ${difficulty || 'medium'}-level recipe that connects with the current season in ${locationContext}.
+    const prompt = `Create a ${difficulty || 'medium'}-level ${mealType} recipe in ${languageMap[validLanguage]} that connects with the current season in ${locationContext}.
 
-    Format your response exactly as follows:
+    Format your response exactly as follows (in ${languageMap[validLanguage]}):
 
-    **Recipe Name:** (Clear, descriptive title)
+    **Recipe Name:** (Clear, descriptive title appropriate for ${mealType})
 
     **Context:**
-    Brief explanation of why this recipe is perfect for the current season and location. Include local ingredients and cultural significance.
+    Brief explanation of why this recipe is perfect for ${mealType} during the current season and location. Include local ingredients and cultural significance.
 
     **Equipment Needed:**
     - Essential tools only
@@ -214,13 +250,15 @@ export async function POST(req: Request) {
 
     Additional Context:
     - Location: ${locationContext}
-    - Season: ${getSeason(new Date())}
+    - Season: ${currentSeason}
     - Weather: ${weatherContext}
+    - Time of Day: ${timeOfDay}
+    - Meal Type: ${mealType}
     - Servings: ${servings}
     - Dietary Needs: ${dietary || 'None specified'}
     - Health Goals: ${additionalInfo || 'General wellness'}${peopleContext}
 
-    Keep the recipe practical, seasonal, and focused on local ingredients.`;
+    Keep the recipe practical, seasonal, and focused on local ingredients. Make sure it's appropriate for ${mealType} and the current time of day (${timeOfDay}). The entire response should be in ${languageMap[validLanguage]}.`;
 
     const response = await model.generateContent(prompt);
     const result = response.response.text();

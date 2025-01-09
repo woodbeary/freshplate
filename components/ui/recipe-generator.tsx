@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ChefHat, UtensilsCrossed, Lock, Unlock, ShoppingCart, ExternalLink, Check, Plus, ArrowLeft, MapPin, Users, Apple, Heart, HelpCircle, User, Clock, ShoppingBasket, ListOrdered, FileText, Cloud, ChevronRight, Share } from "lucide-react";
+import { ChefHat, UtensilsCrossed, Lock, Unlock, ShoppingCart, ExternalLink, Check, Plus, ArrowLeft, MapPin, Users, Apple, Heart, HelpCircle, User, Clock, ShoppingBasket, ListOrdered, FileText, Cloud, ChevronRight, Share, Globe } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import {
@@ -21,6 +21,12 @@ import { getLocationInfo } from "@/lib/utils";
 import { PeopleManager, type Person } from "./people-manager";
 import { RecipeCard } from "./recipe-card";
 import { cn } from "@/lib/utils";
+
+declare global {
+  interface Window {
+    googleTranslateElementInit: () => void;
+  }
+}
 
 const LOADING_MESSAGES = [
   "Consulting the culinary constellations... ✨",
@@ -157,6 +163,18 @@ export function RecipeGenerator() {
   const [locationInfo, setLocationInfo] = useState({ city: "", state: "", description: "" });
   const [people, setPeople] = useState<Person[]>([]);
   const [showDifficultyInfo, setShowDifficultyInfo] = useState(false);
+  const [mealType, setMealType] = useState<'breakfast' | 'lunch' | 'dinner'>('dinner');
+  const [timezone, setTimezone] = useState('');
+  const [language, setLanguage] = useState<'en' | 'es' | 'zh' | 'vi' | 'tl' | 'ko'>('en');
+
+  const languageOptions = {
+    'en': 'English',
+    'es': 'Spanish',
+    'zh': 'Chinese',
+    'vi': 'Vietnamese',
+    'tl': 'Tagalog',
+    'ko': 'Korean'
+  };
 
   useEffect(() => {
     if (zipCode) {
@@ -174,6 +192,12 @@ export function RecipeGenerator() {
       return () => clearInterval(interval);
     }
   }, [isLoading]);
+
+  useEffect(() => {
+    // Detect timezone on component mount
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    setTimezone(tz);
+  }, []);
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -193,6 +217,9 @@ export function RecipeGenerator() {
           additionalInfo,
           people,
           difficulty,
+          mealType,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          language
         }),
       });
 
@@ -578,21 +605,59 @@ export function RecipeGenerator() {
           return (
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-6">
-                <Apple className="h-5 w-5 text-green-600" />
-                <h2 className="text-lg font-semibold">Any dietary restrictions?</h2>
+                <Clock className="h-5 w-5 text-green-600" />
+                <h2 className="text-lg font-semibold">What meal would you like to make?</h2>
               </div>
-              <div>
-                <Label htmlFor="dietary">Dietary Restrictions (Optional)</Label>
-                <Input
-                  id="dietary"
-                  placeholder="e.g., vegetarian, gluten-free, dairy-free..."
-                  value={dietary}
-                  onChange={(e) => setDietary(e.target.value)}
-                  onKeyDown={handleKeyPress}
-                  className="mt-1 text-base"
-                  style={{ fontSize: '16px' }}
-                />
-                <p className="text-sm text-gray-500 mt-2">Leave blank if none</p>
+              <div className="space-y-4">
+                <div>
+                  <Label>Meal Type</Label>
+                  <Select value={mealType} onValueChange={(value: 'breakfast' | 'lunch' | 'dinner') => setMealType(value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select meal type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="breakfast">Breakfast</SelectItem>
+                      <SelectItem value="lunch">Lunch</SelectItem>
+                      <SelectItem value="dinner">Dinner</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Your timezone: {timezone.replace('_', ' ')}
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t">
+                  <Label htmlFor="dietary">Dietary Restrictions (Optional)</Label>
+                  <Input
+                    id="dietary"
+                    placeholder="e.g., vegetarian, gluten-free, dairy-free..."
+                    value={dietary}
+                    onChange={(e) => setDietary(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                    className="mt-1 text-base"
+                    style={{ fontSize: '16px' }}
+                  />
+                  <p className="text-sm text-gray-500 mt-2">Leave blank if none</p>
+                </div>
+
+                <div className="pt-4 border-t">
+                  <Label htmlFor="language">Recipe Language</Label>
+                  <Select value={language} onValueChange={(value: 'en' | 'es' | 'zh' | 'vi' | 'tl' | 'ko') => setLanguage(value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select language" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(languageOptions).map(([code, name]) => (
+                        <SelectItem key={code} value={code}>
+                          {name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-gray-500 mt-2">
+                    This will generate the recipe in your chosen language. For the rest of the page, use your browser's built-in translation.
+                  </p>
+                </div>
               </div>
             </div>
           );
@@ -683,6 +748,32 @@ export function RecipeGenerator() {
             </div>
           </div>
         </div>
+
+        {recipe && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 mt-4"
+            onClick={() => {
+              const script = document.createElement('script');
+              script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+              document.body.appendChild(script);
+              window.googleTranslateElementInit = function() {
+                const google = (window as any).google;
+                new google.translate.TranslateElement({
+                  pageLanguage: 'en',
+                  includedLanguages: 'es,zh,vi,tl,ko',
+                  layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+                }, 'google_translate_element');
+              };
+            }}
+          >
+            <Globe className="h-4 w-4" />
+            Translate Page
+          </Button>
+        )}
+
+        <div id="google_translate_element" className="mt-2"></div>
       </div>
     );
   };

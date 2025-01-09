@@ -1,9 +1,16 @@
-import { RecipeGenerator } from "@/components/ui/recipe-generator";
+'use client';
 
-export default function RecipesPage() {
+import { RecipeGenerator } from '@/components/ui/recipe-generator';
+import { Card, CardContent } from "@/components/ui/card";
+
+export default function RecipePage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <RecipeGenerator />
+    <div className="max-w-xl mx-auto min-h-screen w-full px-4 sm:px-0">
+      <Card className="shadow-none border-0">
+        <CardContent className="p-0">
+          <RecipeGenerator />
+        </CardContent>
+      </Card>
     </div>
   );
 } 
