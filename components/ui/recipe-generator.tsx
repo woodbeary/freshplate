@@ -12,6 +12,15 @@ import { ChefHat, UtensilsCrossed, Lock, Unlock, ShoppingCart, ExternalLink, Che
 import ReactMarkdown from 'react-markdown';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -122,6 +131,27 @@ const RecipeCard = ({
   onSwipe: (dir: 'left' | 'right') => void;
   onStartOver: () => void;
 }) => {
+  const handleShare = async () => {
+    const shareText = `Check out this ${recipe.difficulty} recipe for ${recipe.recipeName} on FreshPlate!\n\n` +
+      `🕒 ${recipe.cookingTime}\n` +
+      `👥 ${servings} servings\n\n` +
+      `${recipe.locationContext.split('.')[0]}.`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${recipe.recipeName} - FreshPlate Recipe`,
+          text: shareText,
+          url: window.location.href
+        });
+      } catch (error) {
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error('Error sharing:', error);
+        }
+      }
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 w-full mx-auto relative min-h-[600px] flex flex-col">
       <div>
@@ -209,50 +239,6 @@ const RecipeCard = ({
             </AccordionItem>
           </Accordion>
         </div>
-
-        <div className="mt-6 space-y-4">
-          <div className="flex gap-2">
-            <Button 
-              className="flex-1 flex items-center justify-center gap-2"
-              onClick={() => window.open(recipe.instacartUrl, '_blank')}
-            >
-              <ShoppingCart className="h-5 w-5" />
-              View in Instacart
-            </Button>
-            <Button
-              variant="outline"
-              onClick={async () => {
-                const shareText = `Check out this ${recipe.difficulty} recipe for ${recipe.recipeName} on FreshPlate!\n\n` +
-                  `🕒 ${recipe.cookingTime}\n` +
-                  `👥 ${servings} servings\n\n` +
-                  `${recipe.locationContext.split('.')[0]}.`;
-
-                if (navigator.share) {
-                  try {
-                    await navigator.share({
-                      title: `${recipe.recipeName} - FreshPlate Recipe`,
-                      text: shareText,
-                      url: window.location.href
-                    });
-                  } catch (error) {
-                    if (error instanceof Error && error.name !== 'AbortError') {
-                      console.error('Error sharing:', error);
-                    }
-                  }
-                }
-              }}
-            >
-              <Share className="h-5 w-5" />
-            </Button>
-          </div>
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={onStartOver}
-          >
-            Start Over
-          </Button>
-        </div>
       </div>
     </div>
   );
@@ -326,6 +312,7 @@ export function RecipeGenerator() {
   const [isTranslateInitialized, setIsTranslateInitialized] = useState(false);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [currentRecipeIndex, setCurrentRecipeIndex] = useState(0);
+  const [showStartOverDialog, setShowStartOverDialog] = useState(false);
 
   const languageOptions = {
     'en': 'English',
@@ -953,6 +940,14 @@ export function RecipeGenerator() {
     </div>
   );
 
+  const handleStartOver = () => {
+    setStep('form');
+    setCurrentStep(1);
+    setRecipe(null);
+    setRecipes([]);
+    setShowStartOverDialog(false);
+  };
+
   return (
     <div className="max-w-xl mx-auto min-h-screen flex flex-col w-full px-4 sm:px-0">
       <Card className="shadow-none border-0 flex-1 flex flex-col relative pb-[72px] sm:pb-[80px]">
@@ -1063,47 +1058,77 @@ export function RecipeGenerator() {
               {isLoading ? (
                 renderLoading()
               ) : recipe ? (
-                <div className="flex-1 p-4 overflow-auto">
-                  <div className="text-center mb-4 text-sm text-gray-500">
-                    Recipe {currentRecipeIndex + 1} of {recipes.length}
+                <div className="relative flex-1 flex flex-col">
+                  <div className="flex-1 p-4 pb-24 overflow-auto">
+                    <div className="relative">
+                      <RecipeCard
+                        recipe={recipe}
+                        servings={servings}
+                        onSwipe={(dir) => {
+                          if (dir === 'left' && currentRecipeIndex > 0) {
+                            showPreviousRecipe();
+                          } else if (dir === 'right' && currentRecipeIndex < recipes.length - 1) {
+                            showNextRecipe();
+                          }
+                        }}
+                        onStartOver={() => {
+                          setStep('form');
+                          setCurrentStep(1);
+                          setRecipe(null);
+                          setRecipes([]);
+                        }}
+                      />
+                      <Button
+                        variant="outline"
+                        className="w-full h-[46px] rounded-full mt-4"
+                        onClick={() => setShowStartOverDialog(true)}
+                      >
+                        Start Over
+                      </Button>
+                    </div>
                   </div>
-                  
-                  <div className="relative">
-                    <RecipeCard
-                      recipe={recipe}
-                      servings={servings}
-                      onSwipe={(dir) => {
-                        if (dir === 'left' && currentRecipeIndex > 0) {
-                          showPreviousRecipe();
-                        } else if (dir === 'right' && currentRecipeIndex < recipes.length - 1) {
-                          showNextRecipe();
-                        }
-                      }}
-                      onStartOver={() => {
-                        setStep('form');
-                        setCurrentStep(1);
-                        setRecipe(null);
-                        setRecipes([]);
-                      }}
-                    />
-                    
-                    <div className="flex justify-center gap-4 mt-6">
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        onClick={showPreviousRecipe}
-                        disabled={currentRecipeIndex === 0}
-                      >
-                        ←
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        onClick={showNextRecipe}
-                        disabled={currentRecipeIndex === recipes.length - 1}
-                      >
-                        →
-                      </Button>
+                  <div className="fixed bottom-0 left-0 right-0 bg-white border-t">
+                    <div className="max-w-xl mx-auto p-4 space-y-4">
+                      <div className="flex gap-2">
+                        <Button 
+                          className="flex-1 flex items-center justify-center gap-2 bg-[#003D29] hover:bg-[#002D1F] text-[#FAF1E5] h-[46px] px-[18px] py-[16px] rounded-full"
+                          onClick={() => window.open(recipe.instacartUrl, '_blank')}
+                        >
+                          <img 
+                            src="/instacart/Instacart_Carrot.png" 
+                            alt="Instacart" 
+                            className="h-[22px] w-[22px] object-contain"
+                          />
+                          Get Recipe Ingredients
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={handleShare}
+                          className="h-[46px] w-[46px] rounded-full p-0"
+                        >
+                          <Share className="h-5 w-5" />
+                        </Button>
+                      </div>
+                      <div className="flex justify-center gap-4">
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          onClick={showPreviousRecipe}
+                          disabled={currentRecipeIndex === 0}
+                          className="w-12 h-12"
+                        >
+                          ←
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          onClick={showNextRecipe}
+                          disabled={currentRecipeIndex === recipes.length - 1}
+                          className="w-12 h-12"
+                        >
+                          →
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1116,6 +1141,32 @@ export function RecipeGenerator() {
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={showStartOverDialog} onOpenChange={setShowStartOverDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Start Over?</DialogTitle>
+            <DialogDescription>
+              This will clear your current recipe and take you back to the beginning. Are you sure?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setShowStartOverDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="default"
+              onClick={handleStartOver}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Start Over
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 } 
