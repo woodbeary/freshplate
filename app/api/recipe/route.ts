@@ -16,6 +16,18 @@ interface ParsedIngredient {
   unit: string;
 }
 
+function parseFraction(fractionStr: string): number {
+  const parts = fractionStr.split('/');
+  if (parts.length === 2) {
+    const numerator = parseFloat(parts[0]);
+    const denominator = parseFloat(parts[1]);
+    if (denominator !== 0) {
+      return numerator / denominator;
+    }
+  }
+  return parseFloat(fractionStr);
+}
+
 function parseIngredient(ingredient: string): ParsedIngredient {
   // Remove leading dash
   ingredient = ingredient.replace(/^-\s*/, '');
@@ -26,10 +38,8 @@ function parseIngredient(ingredient: string): ParsedIngredient {
 
   if (match) {
     const [, quantity, unit, name] = match;
-    // Convert fractions to decimals
-    const numericQuantity = quantity.includes('/')
-      ? eval(quantity) // safely evaluate fraction
-      : parseFloat(quantity);
+    // Convert fractions to decimals using our safe function
+    const numericQuantity = parseFraction(quantity);
 
     // Standardize units
     let standardUnit = unit.toLowerCase();
