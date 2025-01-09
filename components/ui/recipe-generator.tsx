@@ -231,7 +231,7 @@ const RecipeCard = ({
                       className="flex gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                     >
                       <span className="text-green-600 font-medium">{index + 1}.</span>
-                      <p className="text-sm">{step}</p>
+                      <p className="text-sm">{step.replace(/^\d+\.\s*/, '')}</p>
                     </div>
                   ))}
                 </div>
