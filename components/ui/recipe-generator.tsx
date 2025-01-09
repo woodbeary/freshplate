@@ -42,10 +42,6 @@ const LOADING_MESSAGES = [
   "Capturing autumn's golden whispers... 🍁"
 ];
 
-// Get beta access codes from environment variables
-const BETA_ACCESS_CODES = (process.env.NEXT_PUBLIC_BETA_ACCESS_CODES || '').split(',');
-const BETA_CONTACT_EMAIL = process.env.NEXT_PUBLIC_BETA_CONTACT_EMAIL || 'beta@freshplate.ai';
-
 interface ShoppingListItem {
   ingredient: string;
   link: string;
@@ -309,9 +305,6 @@ export function RecipeGenerator() {
   const [preferences, setPreferences] = useState('');
   const [dietary, setDietary] = useState('');
   const [servings, setServings] = useState('2');
-  const [accessCode, setAccessCode] = useState('');
-  const [hasAccess, setHasAccess] = useState(false);
-  const [accessError, setAccessError] = useState('');
   const [shoppingList, setShoppingList] = useState<ShoppingListItem[]>([]);
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [recipe, setRecipe] = useState<Recipe | null>(null);
@@ -457,17 +450,6 @@ export function RecipeGenerator() {
     }
   };
 
-  const handleAccessSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (BETA_ACCESS_CODES.includes(accessCode.trim())) {
-      setHasAccess(true);
-      setAccessError('');
-      sessionStorage.setItem('freshplate_beta_access', 'true');
-    } else {
-      setAccessError('Invalid beta access code. Please try again.');
-    }
-  };
-
   const toggleIngredient = (ingredient: string) => {
     const newSelected = new Set(selectedItems);
     if (newSelected.has(ingredient)) {
@@ -527,7 +509,8 @@ export function RecipeGenerator() {
   useEffect(() => {
     const existingAccess = sessionStorage.getItem('freshplate_beta_access');
     if (existingAccess === 'true') {
-      setHasAccess(true);
+      // Remove this line since we don't need beta access anymore
+      // setHasAccess(true);
     }
   }, []);
 
@@ -969,50 +952,6 @@ export function RecipeGenerator() {
       </p>
     </div>
   );
-
-  if (!hasAccess) {
-    return (
-      <div className="max-w-md mx-auto p-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lock className="h-6 w-6" />
-              Beta Access Required
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleAccessSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="accessCode">Enter Beta Access Code</Label>
-                <Input
-                  id="accessCode"
-                  type="text"
-                  placeholder="Enter your beta access code"
-                  value={accessCode}
-                  onChange={(e) => setAccessCode(e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-              {accessError && (
-                <p className="text-sm text-red-600">{accessError}</p>
-              )}
-              <Button 
-                type="submit" 
-                className="w-full"
-                disabled={!accessCode.trim()}
-              >
-                <Unlock className="mr-2 h-4 w-4" />
-                Access Beta
-              </Button>
-              <p className="text-sm text-gray-500 text-center mt-4">
-                Need a beta access code? Contact us at {BETA_CONTACT_EMAIL}
-              </p>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-xl mx-auto min-h-screen flex flex-col w-full px-4 sm:px-0">

@@ -187,6 +187,109 @@ const DIFFICULTY_GUIDELINES = {
   `
 };
 
+async function getWeatherData(latitude: string, longitude: string) {
+  try {
+    // First, get the grid coordinates from lat/lon
+    const pointsResponse = await fetch(
+      `https://api.weather.gov/points/${latitude},${longitude}`,
+      {
+        headers: {
+          'User-Agent': '(freshplate.ai, contact@freshplate.ai)',
+          'Accept': 'application/json'
+        }
+      }
+    );
+
+    if (!pointsResponse.ok) {
+      console.error('Weather API points error:', await pointsResponse.text());
+      return null;
+    }
+
+    const pointsData = await pointsResponse.json();
+    const forecastUrl = pointsData.properties.forecast;
+
+    // Then, get the actual forecast
+    const forecastResponse = await fetch(forecastUrl, {
+      headers: {
+        'User-Agent': '(freshplate.ai, contact@freshplate.ai)',
+        'Accept': 'application/json'
+      }
+    });
+
+    if (!forecastResponse.ok) {
+      console.error('Weather API forecast error:', await forecastResponse.text());
+      return null;
+    }
+
+    const forecastData = await forecastResponse.json();
+    const currentPeriod = forecastData.properties.periods[0];
+
+    return {
+      temp: currentPeriod.temperature,
+      description: currentPeriod.shortForecast.toLowerCase(),
+      timeOfDay: getTimeOfDay(new Date())
+    };
+  } catch (error) {
+    console.error('Error fetching weather:', error);
+    return null;
+  }
+}
+
+function getWeatherDescription(weatherData: { temp: number; description: string; timeOfDay: string } | null, timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night'): string {
+  if (!weatherData) {
+    // Fallback to the old estimation if weather API fails
+    const descriptions = {
+      morning: [
+        `The morning air is mild, perfect for a hearty breakfast`,
+        `As the sun rises, the temperature is ideal for energizing meals`,
+        `The gentle morning breeze calls for comforting breakfast dishes`
+      ],
+      afternoon: [
+        `The afternoon is perfect for fresh, vibrant dishes`,
+        `The weather invites refreshing meal choices`,
+        `The pleasant afternoon warmth complements colorful, seasonal ingredients`
+      ],
+      evening: [
+        `The evening sets the mood for a satisfying dinner`,
+        `The temperature is perfect for a comforting meal`,
+        `The pleasant evening calls for flavorful dinner options`
+      ],
+      night: [
+        `The night air is perfect for cozy, warming dishes`,
+        `The cool night temperature suggests comforting flavors`,
+        `The night calls for satisfying late dishes`
+      ]
+    };
+    return descriptions[timeOfDay][Math.floor(Math.random() * descriptions[timeOfDay].length)];
+  }
+
+  const { temp, description } = weatherData;
+  const descriptions = {
+    morning: [
+      `At ${temp}°F with ${description}, it's perfect for a hearty breakfast`,
+      `The ${description} morning at ${temp}°F calls for an energizing start`,
+      `With ${description} and ${temp}°F, enjoy a fresh morning meal`
+    ],
+    afternoon: [
+      `The ${description} afternoon at ${temp}°F is ideal for fresh, vibrant dishes`,
+      `At ${temp}°F with ${description}, the weather invites refreshing meal choices`,
+      `The ${temp}°F afternoon with ${description} complements seasonal ingredients`
+    ],
+    evening: [
+      `The ${description} evening at ${temp}°F sets the mood for dinner`,
+      `With ${temp}°F and ${description}, it's perfect for a comforting meal`,
+      `The ${temp}°F evening with ${description} calls for flavorful options`
+    ],
+    night: [
+      `The ${description} night at ${temp}°F is perfect for cozy dishes`,
+      `At ${temp}°F with ${description}, enjoy warming comfort food`,
+      `The ${temp}°F night with ${description} calls for satisfying flavors`
+    ]
+  };
+
+  return descriptions[timeOfDay][Math.floor(Math.random() * descriptions[timeOfDay].length)];
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -226,16 +329,16 @@ export async function POST(req: Request) {
       const locationData = await locationResponse.json();
       const city = locationData.places[0]?.['place name'];
       const state = locationData.places[0]?.state;
-      const latitude = parseFloat(locationData.places[0]?.latitude);
+      const latitude = locationData.places[0]?.latitude;
+      const longitude = locationData.places[0]?.longitude;
 
       // Get current date info
       const date = new Date();
-      const currentSeason = getSeason(date);
-      
-      // Calculate approximate temperature based on latitude and season
-      const baseTemp = getBaseTemperature(latitude, currentSeason);
       const timeOfDay = getTimeOfDay(date);
-      const weatherDesc = getWeatherDescription(baseTemp, timeOfDay);
+      
+      // Get real weather data
+      const weatherData = await getWeatherData(latitude, longitude);
+      const weatherDesc = getWeatherDescription(weatherData, timeOfDay);
       
       locationContext = `${city}, ${state}`;
       weatherContext = weatherDesc;
@@ -416,63 +519,13 @@ export async function POST(req: Request) {
   }
 }
 
-// Helper functions for weather and seasonal context
-function getSeason(date: Date): string {
-  const month = date.getMonth();
-  if (month >= 2 && month <= 4) return 'Spring';
-  if (month >= 5 && month <= 7) return 'Summer';
-  if (month >= 8 && month <= 10) return 'Fall';
-  return 'Winter';
-}
-
-function getBaseTemperature(latitude: number, season: string): number {
-  // Rough temperature estimation based on latitude and season
-  const baseTemp = 75 - Math.abs(latitude - 35);
-  
-  switch (season) {
-    case 'Summer': return baseTemp + 15;
-    case 'Winter': return baseTemp - 20;
-    case 'Spring': return baseTemp;
-    case 'Fall': return baseTemp - 5;
-    default: return baseTemp;
-  }
-}
-
+// Helper functions for time of day
 function getTimeOfDay(date: Date): 'morning' | 'afternoon' | 'evening' | 'night' {
   const hour = date.getHours();
   if (hour >= 5 && hour < 12) return 'morning';
   if (hour >= 12 && hour < 17) return 'afternoon';
   if (hour >= 17 && hour < 21) return 'evening';
   return 'night';
-}
-
-function getWeatherDescription(baseTemp: number, timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night'): string {
-  const descriptions = {
-    morning: [
-      `The crisp morning air is ${baseTemp}°F, perfect for a hearty breakfast`,
-      `As the sun rises, the temperature of ${baseTemp}°F is ideal for energizing meals`,
-      `The gentle morning breeze at ${baseTemp}°F calls for comforting breakfast dishes`
-    ],
-    afternoon: [
-      `The afternoon temperature of ${baseTemp}°F is ideal for fresh, vibrant dishes`,
-      `At ${baseTemp}°F, the weather invites refreshing meal choices`,
-      `The ${baseTemp}°F afternoon warmth complements colorful, seasonal ingredients`
-    ],
-    evening: [
-      `The evening temperature of ${baseTemp}°F sets the mood for a satisfying dinner`,
-      `As the day cools to ${baseTemp}°F, it's perfect for a comforting meal`,
-      `The pleasant ${baseTemp}°F evening calls for flavorful dinner options`
-    ],
-    night: [
-      `The night air at ${baseTemp}°F is perfect for cozy, warming dishes`,
-      `The cool ${baseTemp}°F night temperature suggests comforting flavors`,
-      `At ${baseTemp}°F, the night calls for satisfying late dishes`
-    ]
-  };
-
-  // Get random description for the time of day
-  const timeDescriptions = descriptions[timeOfDay];
-  return timeDescriptions[Math.floor(Math.random() * timeDescriptions.length)];
 }
 
 // Add this new endpoint for selected ingredients
