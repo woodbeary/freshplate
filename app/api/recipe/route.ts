@@ -7,8 +7,10 @@ const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 export const runtime = 'edge';
 
 // Instacart Platform API Configuration
-const INSTACART_API_KEY = process.env.INSTACART_API_KEY;
-const INSTACART_API_URL = 'https://connect.dev.instacart.tools/idp/v1';
+const IS_PRODUCTION = (req: Request) => {
+  const host = req.headers.get('host') || '';
+  return host.includes('freshplate.vercel.app');
+};
 
 interface ParsedIngredient {
   name: string;
@@ -95,8 +97,14 @@ async function generateInstacartLink(ingredient: string): Promise<string> {
   return `https://www.instacart.com/store/search/${searchTerm}`;
 }
 
-async function generateShoppingListLink(ingredients: string[]): Promise<string> {
+async function generateShoppingListLink(ingredients: string[], req: Request): Promise<string> {
   try {
+    const INSTACART_API_KEY = IS_PRODUCTION(req) ? process.env.PROD_INSTACART_API_KEY : process.env.INSTACART_API_KEY;
+    const INSTACART_API_URL = IS_PRODUCTION(req)
+      ? 'https://connect.instacart.com/idp/v1'
+      : 'https://connect.dev.instacart.tools/idp/v1';
+    const TASTEMAKERS_ID = '5487';
+
     if (INSTACART_API_KEY) {
       const parsedIngredients = ingredients.map(ingredient => {
         const parsed = parseIngredient(ingredient);
@@ -121,7 +129,8 @@ async function generateShoppingListLink(ingredients: string[]): Promise<string> 
           'Authorization': `Bearer ${INSTACART_API_KEY}`,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Accept-Language': 'en-US'
+          'Accept-Language': 'en-US',
+          'X-Instacart-Affiliate-Id': TASTEMAKERS_ID
         },
         body: JSON.stringify({
           title,
@@ -490,7 +499,7 @@ export async function POST(req: Request) {
     );
 
     // Try to create a shopping list with ingredients
-    const shoppingListUrl = await generateShoppingListLink(ingredients);
+    const shoppingListUrl = await generateShoppingListLink(ingredients, req);
     
     // If we get a shopping list URL, return that, otherwise fall back to individual search links
     const shoppingList = [
@@ -550,8 +559,8 @@ export async function PUT(req: Request) {
       );
     }
 
-    // Create a shopping list with just the selected ingredients
-    const shoppingListUrl = await generateShoppingListLink(selectedIngredients);
+    // Update the shopping list generation to pass the request
+    const shoppingListUrl = await generateShoppingListLink(selectedIngredients, req);
     
     if (!shoppingListUrl) {
       return NextResponse.json(
