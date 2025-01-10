@@ -569,35 +569,6 @@ export function RecipeGenerator() {
         case 1:
           return (
             <div className="space-y-4">
-              <div className="flex items-center justify-between mb-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2"
-                  onClick={() => {
-                    if (isTranslateInitialized) return;
-                    setIsTranslateInitialized(true);
-                    
-                    const script = document.createElement('script');
-                    script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-                    document.body.appendChild(script);
-                    window.googleTranslateElementInit = function() {
-                      const google = (window as any).google;
-                      new google.translate.TranslateElement({
-                        pageLanguage: 'en',
-                        includedLanguages: 'es,zh,vi,tl,ko',
-                        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-                      }, 'google_translate_element');
-                    };
-                  }}
-                  disabled={isTranslateInitialized}
-                >
-                  <Globe className="h-4 w-4" />
-                  {isTranslateInitialized ? 'Translation Available' : 'Translate Page'}
-                </Button>
-              </div>
-              <div id="google_translate_element" className="mb-4"></div>
-
               <div className="flex items-center gap-2 mb-4 sm:mb-6">
                 <MapPin className="h-5 w-5 text-green-600" />
                 <h2 className="text-base sm:text-lg font-semibold">Where are you located?</h2>
@@ -968,6 +939,34 @@ export function RecipeGenerator() {
               <span className="sm:hidden">Recipe</span>
               <Badge variant="secondary" className="ml-1 font-normal text-sm bg-green-50 text-green-800">Beta</Badge>
             </CardTitle>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+                onClick={() => {
+                  if (isTranslateInitialized) return;
+                  setIsTranslateInitialized(true);
+                  
+                  const script = document.createElement('script');
+                  script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+                  document.body.appendChild(script);
+                  window.googleTranslateElementInit = function() {
+                    const google = (window as any).google;
+                    new google.translate.TranslateElement({
+                      pageLanguage: 'en',
+                      includedLanguages: 'es,zh,vi,tl,ko',
+                      layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+                    }, 'google_translate_element');
+                  };
+                }}
+                disabled={isTranslateInitialized}
+              >
+                <Globe className="h-4 w-4" />
+                {isTranslateInitialized ? 'Translation Available' : 'Translate Page'}
+              </Button>
+              <div id="google_translate_element"></div>
+            </div>
           </div>
           <CardDescription className="text-base mt-2 text-gray-600">
             Let's craft your perfect recipe
