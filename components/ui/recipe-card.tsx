@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChefHat, Clock, Users, Printer, Download } from "lucide-react";
+import { ChefHat, Clock, Users, Printer, Download, Share } from "lucide-react";
 import { Recipe } from "./recipe-generator";
 
 interface RecipeCardProps {
@@ -27,6 +27,10 @@ export function RecipeCard({ recipe, servings }: RecipeCardProps) {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+  };
+
+  const handleShare = () => {
+    // Implement share functionality
   };
 
   return (
@@ -73,7 +77,7 @@ export function RecipeCard({ recipe, servings }: RecipeCardProps) {
             {recipe.ingredients.map((ingredient, index) => (
               <li key={index} className="flex items-start gap-2">
                 <span className="text-green-600">•</span>
-                <span>{ingredient}</span>
+                <span>{ingredient.trim()}</span>
               </li>
             ))}
           </ul>
@@ -108,6 +112,32 @@ export function RecipeCard({ recipe, servings }: RecipeCardProps) {
             </ul>
           </div>
         )}
+
+        {/* Instacart Integration */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t">
+          <div className="max-w-xl mx-auto p-4 space-y-4">
+            <div className="flex gap-2">
+              <Button 
+                className="flex-1 flex items-center justify-center gap-2 bg-[#003D29] hover:bg-[#002D1F] text-[#FAF1E5] h-[46px] px-[18px] py-[16px] rounded-full"
+                onClick={() => window.open(recipe.instacartUrl, '_blank')}
+              >
+                <img 
+                  src="/instacart/Instacart_Carrot.png" 
+                  alt="Instacart" 
+                  className="h-[22px] w-[22px] object-contain"
+                />
+                Get Recipe on Instacart
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleShare}
+                className="h-[46px] w-[46px] rounded-full p-0"
+              >
+                <Share className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+        </div>
       </Card>
 
       <style jsx global>{`

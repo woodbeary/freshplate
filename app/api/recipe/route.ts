@@ -31,8 +31,8 @@ function parseFraction(fractionStr: string): number {
 }
 
 function parseIngredient(ingredient: string): ParsedIngredient {
-  // Remove leading dash
-  ingredient = ingredient.replace(/^-\s*/, '');
+  // Remove leading dash and trim whitespace
+  ingredient = ingredient.replace(/^-\s*/, '').trim();
 
   // Regular expression to match quantity, unit, and ingredient name
   const measurementRegex = /^([\d./]+)\s*(cup|tablespoon|teaspoon|ounce|pound|tbsp|tsp|oz|lb|g|ml|cups|tablespoons|teaspoons|ounces|pounds)s?\b\s*(.+)$/i;
@@ -110,7 +110,7 @@ async function generateShoppingListLink(ingredients: string[], req: Request): Pr
         const parsed = parseIngredient(ingredient);
         return {
           name: parsed.name,
-          display_text: ingredient,
+          display_text: ingredient.replace(/^-\s*/, '').trim(), // Remove leading dash for display
           measurements: [{
             quantity: parsed.quantity,
             unit: parsed.unit
@@ -120,10 +120,10 @@ async function generateShoppingListLink(ingredients: string[], req: Request): Pr
 
       // Create a more concise recipe title
       const title = ingredients.length === 1 
-        ? `Shopping List - ${ingredients[0]}`
-        : `Shopping List - ${ingredients.length} items`;
+        ? `Recipe - ${ingredients[0].replace(/^-\s*/, '').trim()}`
+        : `Recipe - ${ingredients.length} ingredients`;
 
-      const response = await fetch(`${INSTACART_API_URL}/products/recipe`, {
+      const response = await fetch(`${INSTACART_API_URL}/products/products_link`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${INSTACART_API_KEY}`,
@@ -134,7 +134,12 @@ async function generateShoppingListLink(ingredients: string[], req: Request): Pr
         },
         body: JSON.stringify({
           title,
-          ingredients: parsedIngredients,
+          link_type: "recipe",
+          line_items: parsedIngredients.map(ingredient => ({
+            name: ingredient.name,
+            display_text: ingredient.display_text,
+            measurements: ingredient.measurements
+          })),
           country_code: "US",
           landing_page_configuration: {
             enable_pantry_items: false
@@ -444,8 +449,8 @@ export async function POST(req: Request) {
     if (ingredientsMatch) {
       ingredients = ingredientsMatch[1]
         .split('\n')
-        .filter(line => line.trim().startsWith('-'))
-        .map(line => line.trim());
+        .filter(line => line.trim())
+        .map(line => line.trim().replace(/^-\s*/, '')); // Remove leading dash
     }
 
     const methodMatch = result.match(/(?:\*\*Method:\*\*|### Method:)([^#*]+)/);

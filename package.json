@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --hostname 0.0.0.0",
+    "dev": "node -e \"console.log('\\n🔗 Connect from your iPhone using:\\nhttp://' + require('os').networkInterfaces()['en0']?.find(i => i.family === 'IPv4')?.address + ':3000\\n')\" && next dev --hostname 0.0.0.0",
     "build": "next build",
     "start": "next start",
     "lint": "next lint --fix",
