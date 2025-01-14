@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ChefHat, Clock, Users, Printer, Download, Share } from "lucide-react";
 import { Recipe } from "./recipe-generator";
+import Image from "next/image";
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -119,12 +120,14 @@ export function RecipeCard({ recipe, servings }: RecipeCardProps) {
             <div className="flex gap-2">
               <Button 
                 className="flex-1 flex items-center justify-center gap-2 bg-[#003D29] hover:bg-[#002D1F] text-[#FAF1E5] h-[46px] px-[18px] py-[16px] rounded-full"
-                onClick={() => window.open(recipe.instacartUrl, '_blank')}
+                onClick={() => window.open(recipe.instacartUrl, "_blank")}
               >
-                <img 
+                <Image 
                   src="/instacart/Instacart_Carrot.png" 
                   alt="Instacart" 
-                  className="h-[22px] w-[22px] object-contain"
+                  width={22}
+                  height={22}
+                  className="object-contain"
                 />
                 Get Recipe on Instacart
               </Button>
