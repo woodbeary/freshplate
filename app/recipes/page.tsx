@@ -3,6 +3,7 @@
 import { RecipeGenerator } from '@/components/ui/recipe-generator';
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect } from 'react';
+import Head from 'next/head';
 
 // Add type declaration for Instacart widget
 declare global {
@@ -66,6 +67,11 @@ export default function RecipePage() {
 
   return (
     <div className="max-w-xl mx-auto min-h-screen w-full px-4 sm:px-0">
+      {/* Impact Site Verification - Visible */}
+      <div className="text-center py-4 mb-4 bg-gray-100 rounded-md">
+        <p>Impact-Site-Verification: fc179931-ca7a-4260-abc1-32fb29242a64</p>
+      </div>
+      
       <Card className="shadow-none border-0">
         <CardContent className="p-0">
           <RecipeGenerator />
