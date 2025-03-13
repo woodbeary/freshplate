@@ -15,6 +15,7 @@
   - Accordion-based recipe details
   - Location-aware context
   - Support for multiple servings with personal details
+- ✅ Added Impact site verification
 
 ## Recent Improvements
 - 🔄 UI/UX Enhancements

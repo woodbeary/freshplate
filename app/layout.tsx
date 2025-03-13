@@ -29,6 +29,10 @@ export default function RootLayout({
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" 
         />
         <meta name="google" content="notranslate" />
+        <meta 
+          name="Impact-Site-Verification" 
+          content="fc179931-ca7a-4260-abc1-32fb29242a64" 
+        />
       </head>
       <body className={`${inter.className} touch-none`}>
         {children}
